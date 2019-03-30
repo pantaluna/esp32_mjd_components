@@ -41,7 +41,7 @@ git commit -m "Updated"
 
 git push --set-upstream origin master
 
-git tag --annotate v0.82 --message "Added components"
+git tag --annotate v1.3 --message "Added components mjd_sht3x, mjd_tmp36"
 git push origin --tags
 
 git describe --tags --dirt
