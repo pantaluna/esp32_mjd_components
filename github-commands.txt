@@ -43,7 +43,7 @@ git commit -m "Updated"
 git config credential.helper store
 git push --set-upstream origin master
 
-git tag --annotate v1.5 --message "Upgraded for ESP-IDF v3.2 of April 2019"
+git tag --annotate v1.6 --message "Component mjd_sht3x: check the CRC of all returned data (earlier version only checked for Single Measurement, not when reading the Status Register."
 git push origin --tags
 
 git describe --tags --dirt

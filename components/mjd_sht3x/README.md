@@ -2,7 +2,15 @@
 
 This is component for the ESP-IDF software framework of the ESP32 hardware from Espressif.
 
-This component is developed for **the Sensirion SHT3x Relative Humidity and Temperature Sensor product range. A few examples of these products: SHT31, SHT35, SHT85.**
+This component is developed for **the Sensirion SHT3x Relative Humidity and Temperature Sensor product range** and the **Sensirion SHT85 product**. These are a few products of that range:
+
+- SHT30-DIS-B
+- SHT31-DIS-B
+- SHT31-DIS-F
+- SHT31-DIS-P
+- SHT35-DIS-B
+- SHT35-DIS-F
+- SHT85
 
 The ESP-IDF component configures the SHT3x device as a I2C slave device and returns **the temperature in degrees Celsius and Fahrenheit, the relative humidity in % and the dew point in degrees Celsius and Fahrenheit**.
 
