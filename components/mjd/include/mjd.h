@@ -49,6 +49,7 @@ extern "C" {
  *  @deprecated Use esp_err_t instead of mjd_err_t
  *  @deprecated Use ESP_OK instead of MJD_OK
  *  @deprecated Use ESP_FAIL instead of MJD_ERROR
+ *  @deprecated Use ESP_ERR_* instead of MJD_ERR_* if a matching error code exists (e.g. MJD_ERR_INVALID_ARG => ESP_ERR_INVALID_ARG)
  */
 /////typedef int32_t mjd_err_t;
 /////#define MJD_OK     (0)
@@ -158,7 +159,7 @@ void mjd_set_timezone_amsterdam();
 void mjd_get_current_time_yyyymmddhhmmss(char *ptr_buffer);
 
 /**********
- * RTOS
+ * RTOS vTaskDelay() parameter
  */
 #define RTOS_DELAY_0             (0)
 #define RTOS_DELAY_1MILLISEC     (   1 / portTICK_PERIOD_MS)

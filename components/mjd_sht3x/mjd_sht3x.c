@@ -85,21 +85,7 @@ static esp_err_t _check_crc(const uint8_t *param_data, int param_len, uint8_t pa
     ESP_LOGD(TAG, "%s()", __FUNCTION__);
 
     esp_err_t f_retval = ESP_OK;
-/*
-    // calculates 8-Bit checksum with given polynomial
-    const uint8_t POLYNOMIAL = 0x31;
-    uint8_t crc = 0xFF;
-    for (uint8_t idx = 0; idx < param_len; idx++) {
-        crc ^= (param_data[idx]);
-        for (uint8_t bit = 8; bit > 0; --bit) {
-            if (crc & 0x80) {
-                crc = (crc << 1) ^ POLYNOMIAL;
-            } else {
-                crc = (crc << 1);
-            }
-        }
-    }
-*/
+
     uint8_t crc = 0;
     _compute_crc(param_data, param_len, &crc);
     if (crc != param_expected_value) {

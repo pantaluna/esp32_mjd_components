@@ -26,7 +26,7 @@ extern "C" {
 #define MJD_SHT3X_I2C_ADDRESS_DEFAULT           (0x44)       /*!< The default 0x44 can be changed. */
 #define MJD_SHT3X_I2C_MASTER_NUM_DEFAULT        (I2C_NUM_0)  /*!< The default I2C_NUM_0 can be changed. */
 #define MJD_SHT3X_I2C_MAX_TICKS_TO_WAIT_DEFAULT (1000 / portTICK_PERIOD_MS) /*!< The default 1000ms can be changed. */
-#define MJD_SHT3X_I2C_MASTER_FREQ_HZ            (100 * 1000) /*!< [ESP32 Max 1 MHz.] Use 10Khz for long wires (>25cm). I2C master clock freq: Normal (100 KHz), FastMode (400 Khz), FastModePlus (1 Mhz). */
+#define MJD_SHT3X_I2C_MASTER_FREQ_HZ            (100 * 1000) /*!< (ESP32 Max 1 MHz) Use 10Khz for long wires (>25cm). I2C master clock freq: Normal (100 KHz), FastMode (400 Khz), FastModePlus (1 Mhz). */
 #define MJD_SHT3X_I2C_MASTER_RX_BUF_DISABLE     (0)          /*!< I2C master does not need RX buffer. This param is for I2C slaves. */
 #define MJD_SHT3X_I2C_MASTER_TX_BUF_DISABLE     (0)          /*!< I2C master does not need TX buffer. This param is for I2C slaves. */
 #define MJD_SHT3X_I2C_MASTER_INTR_FLAG_NONE     (0)
