@@ -1,5 +1,5 @@
 /*
- * HARDWARE SETUP the MJD components:
+ * HARDWARE SETUP:
  *  *NONE
  *
  */
@@ -111,7 +111,7 @@ void main_task(void *pvParameter) {
     mjd_log_time();
     ESP_LOGI(TAG,
             "@tip You can also change the log level to DEBUG for more detailed logging and to get insights in what the component is actually doing.");
-    ESP_LOGI(TAG, "@doc Wait 2 seconds after power-on (start logic analyzer, let peripherals become active, ...)");
+    ESP_LOGI(TAG, "@doc Wait 2 seconds after power-on (start logic analyzer, ...)");
     vTaskDelay(RTOS_DELAY_2SEC);
 
     /********************************************************************************
@@ -138,12 +138,12 @@ void main_task(void *pvParameter) {
      * BYTES/WORDS and BINARY REPRESENTATION
      */
     ESP_LOGI(TAG, "\nMJD_HIBYTE(word) and MJD_LOBYTE(word):");
-    ESP_LOGI(TAG, "  (uint8_t)0xFFFF : sizeof=%u", sizeof((uint8_t )0xFFFF));
-    ESP_LOGI(TAG, "  (uint16_t)0xFFFF: sizeof=%u", sizeof((uint16_t )0xFFFF));
-    ESP_LOGI(TAG, "  MJD_HIBYTE(0xFFEE): 0x%X (sizeof=%u)", MJD_HIBYTE(0xFFEE), sizeof(MJD_HIBYTE(0xFFEE)));
-    ESP_LOGI(TAG, "  MJD_LOBYTE(0xFFEE): 0x%X (sizeof=%u)", MJD_LOBYTE(0xFFEE), sizeof(MJD_LOBYTE(0xFFEE)));
-    ESP_LOGI(TAG, "  MJD_HIBYTE(0x0000): 0x%X (sizeof=%u)", MJD_HIBYTE(0x0000), sizeof(MJD_HIBYTE(0x0000)));
-    ESP_LOGI(TAG, "  MJD_LOBYTE(0x0000): 0x%X (sizeof=%u)", MJD_LOBYTE(0x0000), sizeof(MJD_LOBYTE(0x0000)));
+    ESP_LOGI(TAG, "  (uint8_t)0xFFFF : sizeof=%zu", sizeof((uint8_t )0xFFFF));
+    ESP_LOGI(TAG, "  (uint16_t)0xFFFF: sizeof=%zu", sizeof((uint16_t )0xFFFF));
+    ESP_LOGI(TAG, "  MJD_HIBYTE(0xFFEE): 0x%X (sizeof=%zu)", MJD_HIBYTE(0xFFEE), sizeof(MJD_HIBYTE(0xFFEE)));
+    ESP_LOGI(TAG, "  MJD_LOBYTE(0xFFEE): 0x%X (sizeof=%zu)", MJD_LOBYTE(0xFFEE), sizeof(MJD_LOBYTE(0xFFEE)));
+    ESP_LOGI(TAG, "  MJD_HIBYTE(0x0000): 0x%X (sizeof=%zu)", MJD_HIBYTE(0x0000), sizeof(MJD_HIBYTE(0x0000)));
+    ESP_LOGI(TAG, "  MJD_LOBYTE(0x0000): 0x%X (sizeof=%zu)", MJD_LOBYTE(0x0000), sizeof(MJD_LOBYTE(0x0000)));
 
     ESP_LOGI(TAG, "\nmjd_byte_to_binary_string():");
 
@@ -313,125 +313,248 @@ void main_task(void *pvParameter) {
     /////mjd_rtos_wait_forever();
 
     /********************************************************************************
+     * Crypto
+     *
+     */
+    {
+        ESP_LOGI(TAG, "\n\n***SECTION: Crypto: XOR Cipher algo (symmetric)***");
+
+        const static uint8_t _XOR_CIPHER_KEY = 0b01011010;
+        char key_binary_string[9];
+        mjd_byte_to_binary_string(_XOR_CIPHER_KEY, key_binary_string);
+        ESP_LOGI(TAG, "  key: %u (0b%s)", _XOR_CIPHER_KEY, key_binary_string);
+
+        char str[] = "1234567890"
+                "abcdefghijklmnopqrstuvwxyz"
+                "ABCDEFGHIJKLMNOPQRSTUVXYZ";
+        ESP_LOGI(TAG, "  => str:");
+        ESP_LOG_BUFFER_HEXDUMP(TAG, str, strlen(str), ESP_LOG_INFO);
+
+        ESP_LOGI(TAG, "  <= str:");
+        f_retval = mjd_crypto_xor_cipher(_XOR_CIPHER_KEY, (uint8_t*) str, strlen(str));
+        if (f_retval == ESP_OK) {
+            ESP_LOG_BUFFER_HEXDUMP(TAG, str, strlen(str), ESP_LOG_INFO);
+        }
+
+        ESP_LOGI(TAG, "  <= str:");
+        f_retval = mjd_crypto_xor_cipher(_XOR_CIPHER_KEY, (uint8_t*) str, strlen(str));
+        if (f_retval == ESP_OK) {
+            ESP_LOG_BUFFER_HEXDUMP(TAG, str, strlen(str), ESP_LOG_INFO);
+        }
+
+        ESP_LOGI(TAG, "  <= str:");
+        f_retval = mjd_crypto_xor_cipher(_XOR_CIPHER_KEY, (uint8_t*) str, 0);
+        if (f_retval == ESP_OK) {
+            ESP_LOG_BUFFER_HEXDUMP(TAG, str, strlen(str), ESP_LOG_INFO);
+        }
+
+        ESP_LOGI(TAG, "  <= str:");
+        f_retval = mjd_crypto_xor_cipher(_XOR_CIPHER_KEY, NULL, 0);
+        if (f_retval == ESP_OK) {
+            ESP_LOG_BUFFER_HEXDUMP(TAG, str, strlen(str), ESP_LOG_INFO);
+        }
+
+        // DEVTEMP: HALT
+        /////mjd_rtos_wait_forever();
+    }
+
+    /********************************************************************************
      * C Language: Linux Kernel linked list tool belt
      *
      */
-    ESP_LOGI(TAG, "\n\n***SECTION: C Language: Linux Kernel linked list tool belt***");
-
-    mjd_log_memory_statistics();
-
-    static MJD_LIST_HEAD(fox_list);
-
-    typedef struct {
-        uint32_t code;
-        float weight_kg;
-        bool is_loyal;
-        struct mjd_list_head list;
-    } fox_t;
-
-    fox_t *ptr_one_fox, *ptr_next_fox;
-    uint32_t mycounter = 0; // mjd_list_count()
-
-    ESP_LOGI(TAG, "mjd_list_empty() 0=no 1=yes");
-    ESP_LOGI(TAG, "   %u", mjd_list_empty(&fox_list));
-
-    ESP_LOGI(TAG, "ADD TAIL code 10");
-    fox_t *ptr_first_fox;
-    ptr_first_fox = malloc(sizeof(*ptr_first_fox));
-    ptr_first_fox->code = 10;
-    ptr_first_fox->weight_kg = 10.10;
-    ptr_first_fox->is_loyal = false;
-    ESP_LOGI(TAG, "  sizeof(*ptr_one_fox): %u bytes", sizeof(*ptr_one_fox));
-    mjd_list_add_tail(&ptr_first_fox->list, &fox_list);
-
-    ESP_LOGI(TAG, "ADD TAIL code 20");
-    fox_t *ptr_second_fox;
-    ptr_second_fox = malloc(sizeof(*ptr_second_fox));
-    ptr_second_fox->code = 20;
-    ptr_second_fox->weight_kg = 20.20;
-    ptr_second_fox->is_loyal = false;
-    mjd_list_add_tail(&ptr_second_fox->list, &fox_list);
-
-    ESP_LOGI(TAG, "ADD TAIL code 30");
-    fox_t *ptr_third_fox;
-    ptr_third_fox = malloc(sizeof(*ptr_third_fox));
-    ptr_third_fox->code = 30;
-    ptr_third_fox->weight_kg = 30.30;
-    ptr_third_fox->is_loyal = false;
-    mjd_list_add_tail(&ptr_third_fox->list, &fox_list);
-
-    ESP_LOGI(TAG, "ADD FRONT code 90");
-    fox_t *ptr_zero_fox;
-    ptr_zero_fox = malloc(sizeof(*ptr_zero_fox));
-    ptr_zero_fox->code = 90;
-    ptr_zero_fox->weight_kg = 90.90;
-    ptr_zero_fox->is_loyal = false;
-    mjd_list_add(&ptr_zero_fox->list, &fox_list);
-
-    ESP_LOGI(TAG, "LIST (4)");
-    mjd_list_for_each_entry(ptr_one_fox, &fox_list, list)
     {
-        ESP_LOGI(TAG, "  fox->code %u", ptr_one_fox->code);
+        ESP_LOGI(TAG, "\n\n***SECTION: C Language: Linux Kernel linked list tool belt***");
+
+        mjd_log_memory_statistics();
+
+        static MJD_LIST_HEAD(fox_list);
+
+        typedef struct {
+            uint32_t code;
+            float weight_kg;
+            bool is_loyal;
+            struct mjd_list_head list;
+        } fox_t;
+
+        fox_t *ptr_one_fox, *ptr_next_fox;
+        uint32_t mycounter = 0; // mjd_list_count()
+
+        ESP_LOGI(TAG, "mjd_list_empty() 0=no 1=yes");
+        ESP_LOGI(TAG, "   %u", mjd_list_empty(&fox_list));
+
+        ESP_LOGI(TAG, "ADD TAIL code 10");
+        fox_t *ptr_first_fox;
+        ptr_first_fox = malloc(sizeof(*ptr_first_fox));
+        ptr_first_fox->code = 10;
+        ptr_first_fox->weight_kg = 10.10;
+        ptr_first_fox->is_loyal = false;
+        ESP_LOGI(TAG, "  sizeof(*ptr_one_fox): %u bytes", sizeof(*ptr_one_fox));
+        mjd_list_add_tail(&ptr_first_fox->list, &fox_list);
+
+        ESP_LOGI(TAG, "ADD TAIL code 20");
+        fox_t *ptr_second_fox;
+        ptr_second_fox = malloc(sizeof(*ptr_second_fox));
+        ptr_second_fox->code = 20;
+        ptr_second_fox->weight_kg = 20.20;
+        ptr_second_fox->is_loyal = false;
+        mjd_list_add_tail(&ptr_second_fox->list, &fox_list);
+
+        ESP_LOGI(TAG, "ADD TAIL code 30");
+        fox_t *ptr_third_fox;
+        ptr_third_fox = malloc(sizeof(*ptr_third_fox));
+        ptr_third_fox->code = 30;
+        ptr_third_fox->weight_kg = 30.30;
+        ptr_third_fox->is_loyal = false;
+        mjd_list_add_tail(&ptr_third_fox->list, &fox_list);
+
+        ESP_LOGI(TAG, "ADD FRONT code 90");
+        fox_t *ptr_zero_fox;
+        ptr_zero_fox = malloc(sizeof(*ptr_zero_fox));
+        ptr_zero_fox->code = 90;
+        ptr_zero_fox->weight_kg = 90.90;
+        ptr_zero_fox->is_loyal = false;
+        mjd_list_add(&ptr_zero_fox->list, &fox_list);
+
+        ESP_LOGI(TAG, "LIST (4)");
+        mjd_list_for_each_entry(ptr_one_fox, &fox_list, list)
+        {
+            ESP_LOGI(TAG, "  fox->code %u", ptr_one_fox->code);
+        }
+        ESP_LOGI(TAG, "mjd_list_empty() 0=no 1=yes");
+        ESP_LOGI(TAG, "   %u", mjd_list_empty(&fox_list));
+
+        ESP_LOGI(TAG, "MJD_LIST_COUNT (=4!)");
+        mjd_list_count(&fox_list, &mycounter);
+        ESP_LOGI(TAG, "  mycounter: %u", mycounter);
+
+        ESP_LOGI(TAG, "DELETE code 20");
+        mjd_list_del(&ptr_second_fox->list);
+        ESP_LOGI(TAG, "LIST");
+        mjd_list_for_each_entry(ptr_one_fox, &fox_list, list)
+        {
+            ESP_LOGI(TAG, "  fox->code %u", ptr_one_fox->code);
+        }
+        ESP_LOGI(TAG, "mjd_list_empty() 0=no 1=yes");
+        ESP_LOGI(TAG, "   %u", mjd_list_empty(&fox_list));
+
+        ESP_LOGI(TAG, "MJD_LIST_COUNT (=3!)");
+        mjd_list_count(&fox_list, &mycounter);
+        ESP_LOGI(TAG, "  mycounter: %u", mycounter);
+
+        ESP_LOGI(TAG, "DELETE *ALL");
+        mjd_list_for_each_entry_safe(ptr_one_fox, ptr_next_fox, &fox_list, list)
+        {
+            mjd_list_del(&ptr_one_fox->list);
+            free(ptr_one_fox);
+        }
+        ESP_LOGI(TAG, "LIST (should be empty)");
+        mjd_list_for_each_entry(ptr_one_fox, &fox_list, list)
+        {
+            ESP_LOGI(TAG, "  fox->code %u", ptr_one_fox->code);
+        }
+        ESP_LOGI(TAG, "mjd_list_empty() 0=no 1=yes");
+        ESP_LOGI(TAG, "   %u", mjd_list_empty(&fox_list));
+
+        ESP_LOGI(TAG, "MJD_LIST_COUNT (=0!)");
+        mjd_list_count(&fox_list, &mycounter);
+        ESP_LOGI(TAG, "  mycounter: %u", mycounter);
+
+        ESP_LOGI(TAG, "ADD 1000 ITEMS (limited FREE HEAP might be only +-200K)");
+        mjd_log_memory_statistics();
+        for (uint32_t j = 0; j < 1000; ++j) {
+            //printf("%u ", j); fflush(stdout);
+            ptr_one_fox = malloc(sizeof(*ptr_one_fox));
+            ptr_one_fox->code = j;
+            ptr_one_fox->weight_kg = j * 25.25;
+            ptr_one_fox->is_loyal = false;
+            mjd_list_add_tail(&ptr_one_fox->list, &fox_list);
+        }
+        mjd_log_memory_statistics();
+        ESP_LOGI(TAG, "mjd_list_empty() 0=no 1=yes");
+        ESP_LOGI(TAG, "   %u", mjd_list_empty(&fox_list));
+        ESP_LOGI(TAG, "MJD_LIST_COUNT");
+        mjd_list_count(&fox_list, &mycounter);
+        ESP_LOGI(TAG, "  mycounter: %u", mycounter);
+        mjd_log_memory_statistics();
+
+        // DEVTEMP: HALT
+        /////mjd_rtos_wait_forever();
     }
-    ESP_LOGI(TAG, "mjd_list_empty() 0=no 1=yes");
-    ESP_LOGI(TAG, "   %u", mjd_list_empty(&fox_list));
 
-    ESP_LOGI(TAG, "MJD_LIST_COUNT (=4!)");
-    mjd_list_count(&fox_list, &mycounter);
-    ESP_LOGI(TAG, "  mycounter: %u", mycounter);
-
-    ESP_LOGI(TAG, "DELETE code 20");
-    mjd_list_del(&ptr_second_fox->list);
-    ESP_LOGI(TAG, "LIST");
-    mjd_list_for_each_entry(ptr_one_fox, &fox_list, list)
+    /********************************************************************************
+     * C Networking: MAC addresses, IP addresses, etc.
+     *
+     */
     {
-        ESP_LOGI(TAG, "  fox->code %u", ptr_one_fox->code);
+        ESP_LOGI(TAG, "\n\n***SECTION: C NETWORKING Helpers***");
+
+        uint8_t mac[6];
+
+        ESP_LOGI(TAG, "Print MAC Address:");
+        esp_efuse_mac_get_default(mac);
+        ESP_LOGI(TAG, "  ESP32 default MAC Address: "MJDMACFMT, MJDMAC2STR(mac));
+
+        ESP_LOGI(TAG, "mjd_string_to_mac()");
+
+        ESP_LOGI(TAG, "mjd_string_to_mac() String 01:02:03:AA:BB:CC uppercase (OK) => ");
+        f_retval = mjd_string_to_mac("01:02:03:AA:BB:CC", mac, ARRAY_SIZE(mac));
+        if (f_retval != ESP_OK) {
+            ESP_LOGE(TAG, "mjd_string_to_mac() err %i (%s)", f_retval, esp_err_to_name(f_retval));
+        }
+        ESP_LOGI(TAG, "  uint8_t mac[6]: "MJDMACFMT, MJDMAC2STR(mac));
+
+        ESP_LOGI(TAG, "mjd_string_to_mac() String 01:02:03:aa:bb:cc lowercase (OK) =>");
+        f_retval = mjd_string_to_mac("01:02:03:aa:bb:cc", mac, ARRAY_SIZE(mac));
+        if (f_retval != ESP_OK) {
+            ESP_LOGE(TAG, "mjd_string_to_mac() err %i (%s)", f_retval, esp_err_to_name(f_retval));
+        }
+        ESP_LOGI(TAG, "  uint8_t mac[6]: "MJDMACFMT, MJDMAC2STR(mac));
+
+        ESP_LOGI(TAG, "mjd_string_to_mac() String MM:NN:OO:AA:BB:CC invalid data (expecting error) =>");
+        f_retval = mjd_string_to_mac("MM:NN:OO:AA:BB:CC", mac, ARRAY_SIZE(mac));
+        if (f_retval != ESP_OK) {
+            ESP_LOGE(TAG, "mjd_string_to_mac() err %i (%s)", f_retval, esp_err_to_name(f_retval));
+        }
+        ESP_LOGI(TAG, "  uint8_t mac[6]: "MJDMACFMT, MJDMAC2STR(mac));
+
+        ESP_LOGI(TAG, "mjd_string_to_mac() String LALA invalid data (expecting error) =>");
+        f_retval = mjd_string_to_mac("LALA", mac, ARRAY_SIZE(mac));
+        if (f_retval != ESP_OK) {
+            ESP_LOGE(TAG, "mjd_string_to_mac() err %i (%s)", f_retval, esp_err_to_name(f_retval));
+        }
+        ESP_LOGI(TAG, "  uint8_t mac[6]: "MJDMACFMT, MJDMAC2STR(mac));
+
+        ESP_LOGI(TAG, "mjd_string_to_mac() invalid length of mac array (expecting error) =>");
+        f_retval = mjd_string_to_mac("01:02:03:AA:BB:CC", mac, 1);
+        if (f_retval != ESP_OK) {
+            ESP_LOGE(TAG, "mjd_string_to_mac() err %i (%s)", f_retval, esp_err_to_name(f_retval));
+        }
+        ESP_LOGI(TAG, "  uint8_t mac[6]: "MJDMACFMT, MJDMAC2STR(mac));
+
+        ESP_LOGI(TAG, "mjd_mac_string_to_mac()");
+        char result_str[18]; // 17+1 for \0
+
+        ESP_LOGI(TAG, "mjd_mac_to_string() bytes AA:BB:CC:DD:EE:FF (OK) => ");
+        uint8_t mac_six[6] =
+            { 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF };
+        f_retval = mjd_mac_to_string(mac_six, ARRAY_SIZE(mac_six), result_str);
+        if (f_retval != ESP_OK) {
+            ESP_LOGE(TAG, "mjd_mac_to_string() err %i (%s)", f_retval, esp_err_to_name(f_retval));
+        }
+        ESP_LOGI(TAG, "  result_str: %s", result_str);
+
+        ESP_LOGI(TAG, "mjd_mac_to_string() bytes 01:02:03 (expecting error) => ");
+        uint8_t mac_two[2] =
+            { 0x1, 0x2 };
+        f_retval = mjd_mac_to_string(mac_two, ARRAY_SIZE(mac_two), result_str);
+        if (f_retval != ESP_OK) {
+            ESP_LOGE(TAG, "mjd_mac_to_string() err %i (%s)", f_retval, esp_err_to_name(f_retval));
+        }
+        ESP_LOGI(TAG, "  result_str: %s", result_str);
+
+        // DEVTEMP: HALT
+        /////mjd_rtos_wait_forever();
     }
-    ESP_LOGI(TAG, "mjd_list_empty() 0=no 1=yes");
-    ESP_LOGI(TAG, "   %u", mjd_list_empty(&fox_list));
-
-    ESP_LOGI(TAG, "MJD_LIST_COUNT (=3!)");
-    mjd_list_count(&fox_list, &mycounter);
-    ESP_LOGI(TAG, "  mycounter: %u", mycounter);
-
-    ESP_LOGI(TAG, "DELETE *ALL");
-    mjd_list_for_each_entry_safe(ptr_one_fox, ptr_next_fox, &fox_list, list)
-    {
-        mjd_list_del(&ptr_one_fox->list);
-        free(ptr_one_fox);
-    }
-    ESP_LOGI(TAG, "LIST (should be empty)");
-    mjd_list_for_each_entry(ptr_one_fox, &fox_list, list)
-    {
-        ESP_LOGI(TAG, "  fox->code %u", ptr_one_fox->code);
-    }
-    ESP_LOGI(TAG, "mjd_list_empty() 0=no 1=yes");
-    ESP_LOGI(TAG, "   %u", mjd_list_empty(&fox_list));
-
-    ESP_LOGI(TAG, "MJD_LIST_COUNT (=0!)");
-    mjd_list_count(&fox_list, &mycounter);
-    ESP_LOGI(TAG, "  mycounter: %u", mycounter);
-
-    ESP_LOGI(TAG, "ADD 1000 ITEMS (limited FREE HEAP might be only +-200K)");
-    mjd_log_memory_statistics();
-    for (uint32_t j = 0; j < 1000; ++j) {
-        //printf("%u ", j); fflush(stdout);
-        ptr_one_fox = malloc(sizeof(*ptr_one_fox));
-        ptr_one_fox->code = j;
-        ptr_one_fox->weight_kg = j * 25.25;
-        ptr_one_fox->is_loyal = false;
-        mjd_list_add_tail(&ptr_one_fox->list, &fox_list);
-    }
-    mjd_log_memory_statistics();
-    ESP_LOGI(TAG, "mjd_list_empty() 0=no 1=yes");
-    ESP_LOGI(TAG, "   %u", mjd_list_empty(&fox_list));
-    ESP_LOGI(TAG, "MJD_LIST_COUNT");
-    mjd_list_count(&fox_list, &mycounter);
-    ESP_LOGI(TAG, "  mycounter: %u", mycounter);
-    mjd_log_memory_statistics();
-
-    // DEVTEMP: HALT
-    /////mjd_rtos_wait_forever();
 
     /********************************************************************************
      * RTOS

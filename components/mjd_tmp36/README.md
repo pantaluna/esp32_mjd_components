@@ -19,7 +19,7 @@ More information about the device:
 
 [ Go to the _doc folder for photo's.]
 
-- Adafruit TMP36 Analog Gas Sensor.
+- Adafruit TMP36 Analog Temperature Sensor.
 
 
 

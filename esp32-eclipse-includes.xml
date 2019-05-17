@@ -18,8 +18,6 @@
 <includepath>${IDF_PATH}/components/freertos/include</includepath>
 <includepath>${IDF_PATH}/components/json/cJSON</includepath>
 <includepath>${IDF_PATH}/components/log/include</includepath>
-<includepath>${IDF_PATH}/components/lwip/include/lwip</includepath>
-<includepath>${IDF_PATH}/components/lwip/include/lwip/lwip</includepath>
 <includepath>${IDF_PATH}/components/lwip/lwip/src/include</includepath>
 <includepath>${IDF_PATH}/components/mbedtls/mbedtls/include</includepath>
 <includepath>${IDF_PATH}/components/mdns/include</includepath>

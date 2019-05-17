@@ -145,6 +145,11 @@ esp_err_t mjd_string_to_hexstring(const char * param_ptr_input, size_t param_len
 esp_err_t mjd_hexstring_to_string(const char * param_ptr_input, size_t param_len_input, char * param_ptr_output);
 
 /**********
+ * CRYPTO
+ */
+esp_err_t mjd_crypto_xor_cipher(const uint8_t param_key, uint8_t* param_ptr_values, const size_t param_values_len);
+
+/**********
  * DATE TIME
  * @doc unsigned int (uint32_t on ESP32) Maximum value: 4294967295
  */
@@ -157,6 +162,14 @@ void mjd_log_time();
 void mjd_set_timezone_utc();
 void mjd_set_timezone_amsterdam();
 void mjd_get_current_time_yyyymmddhhmmss(char *ptr_buffer);
+
+/**********
+ * Network helpers
+ */
+
+// Mac Address helper for printf
+#define MJDMACFMT "%02X:%02X:%02X:%02X:%02X:%02X"
+#define MJDMAC2STR(a) (a)[0], (a)[1], (a)[2], (a)[3], (a)[4], (a)[5]
 
 /**********
  * RTOS vTaskDelay() parameter
