@@ -1183,8 +1183,8 @@ void main_task(void *pvParameter) {
 
     /********************************************************************************
      * DEEP SLEEP & RESTART TIMER
-     * @sop Put this section in comments when testing other things afterwards (else the MCU restarts every time...)
-     * @important In deep sleep mode, wireless peripherals are powered down. Before entering sleep mode, applications must disable WiFi and BT using appropriate calls ( esp_bluedroid_disable(), esp_bt_controller_disable(), esp_wifi_stop()).
+     * @sop Put this section in comments when testing other things afterwards (else the MCU restarts every time...).
+     * @important In deep sleep mode, wireless peripherals are powered down. Before entering sleep mode, applications must disable WiFi and BT using appropriate calls (esp_wifi_stop(), esp_bluedroid_disable(), esp_bt_controller_disable()).
      * @doc https://esp-idf.readthedocs.io/en/latest/api-reference/system/sleep_modes.html
      *
      */
@@ -1199,7 +1199,7 @@ void main_task(void *pvParameter) {
     ESP_LOGI(TAG, "Entering deep sleep (the MCU should wake up %u seconds later)...\n\n", MY_DEEP_SLEEP_TIME_SEC);
     vTaskDelay(RTOS_DELAY_1SEC);
 
-    // DEVTEMP-BEGIN WORKAROUND for "The system does not wake up properly anymore after the ***2nd*** deep sleep period (and any deep sleep period after that) using ESP-IDF v3.2-dev-607-gb14e87a6."
+    // DEVTEMP-BEGIN WORKAROUND for ESP-IDF v3.2-dev-607-gb14e87a6 "The system does not wake up properly anymore after the ***2nd*** deep sleep period (and any deep sleep period after that)."
     //     A temporary workaround is to call esp_set_deep_sleep_wake_stub(NULL); before entering deep sleep
     //     https://www.esp32.com/viewtopic.php?f=13&t=6919&p=29714
     /////esp_set_deep_sleep_wake_stub(NULL);
@@ -1208,7 +1208,6 @@ void main_task(void *pvParameter) {
     esp_deep_sleep_start();
 
     // DEVTEMP @important I never get to this code line if deep sleep is initiated :P
-    /////mjd_rtos_wait_forever();
 
     /********************************************************************************
      * Task Delete

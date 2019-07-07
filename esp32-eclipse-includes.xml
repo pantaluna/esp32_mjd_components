@@ -24,6 +24,7 @@
 <includepath>${IDF_PATH}/components/newlib/include</includepath>
 <includepath>${IDF_PATH}/components/nvs_flash/include</includepath>
 <includepath>${IDF_PATH}/components/openssl/include</includepath>
+<includepath>${IDF_PATH}/components/esp_ringbuf/include/freertos</includepath>
 <includepath>${IDF_PATH}/components/soc/include</includepath>
 <includepath>${IDF_PATH}/components/soc/esp32/include</includepath>
 <includepath>${IDF_PATH}/components/spi_flash/include</includepath>

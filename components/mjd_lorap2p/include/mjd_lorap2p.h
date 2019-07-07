@@ -18,14 +18,20 @@ extern "C" {
 // TODO TO be exacted later (somewhere between 200 and 230)
 #define MJD_LORAP2P_TX_PAYLOAD_MAX_BYTES (220)
 
-// The MAC device address to which you want to TX (can be changed in the app)
-#define MJD_LORAP2P_MAC_EDGE_FORWARDER ("00:00:00:00:00:01")
+// Various radio net/device addresses (can be changed in the app)
+#define MJD_LORAP2P_ADDR_NET_1_EDGE_GATEWAY ("01:00:00")
+#define MJD_LORAP2P_ADDR_NET_1_DEVICE_1 ("01:00:01")
+#define MJD_LORAP2P_ADDR_NET_1_DEVICE_2 ("01:00:02")
+
+// Address helper for printf
+#define MJDLORAP2PADDRFMT "%02X:%02X:%02X"
+#define MJDLORAP2PADDRSTR(a) (a)[0], (a)[1], (a)[2]
 
 typedef enum {
-    MJD_LORAP2P_RADIO_CHANNEL_1 = 1, /*!< Matches indices of mjd_lorabee_p2p_channel_configs[] */
-    MJD_LORAP2P_RADIO_CHANNEL_2 = 2,
-    MJD_LORAP2P_RADIO_CHANNEL_3 = 3,
-    MJD_LORAP2P_RADIO_CHANNEL_4 = 4,
+    MJD_LORAP2P_RADIO_CHANNEL_1 = 0, /*!< Matches indices of mjd_lorabee_p2p_channel_configs[] */
+    MJD_LORAP2P_RADIO_CHANNEL_2 = 1,
+    MJD_LORAP2P_RADIO_CHANNEL_3 = 2,
+    MJD_LORAP2P_RADIO_CHANNEL_4 = 3,
     MJD_LORAP2P_RADIO_CHANNEL_MAX,
 } mjd_lorap2p_radio_channel_t;
 
@@ -44,7 +50,7 @@ typedef struct {
         gpio_num_t uart_rx_gpio_num; /*!< The ESP32 GPIO Number for the UART RX pin (GPIO#23 for an Adafruit Huzzah32) */
         gpio_num_t reset_gpio_num; /*!< The ESP32 GPIO pin that is wired to the LoraBee Reset pin (GPIO#14 for an Adafruit Huzzah32) */
 
-        uint8_t radio_device_address[6]; /*!< @default esp_efuse_mac_get_default() */
+        uint8_t radio_device_address[3]; /*!< NN:DD:DD Net (01) + Device (00:01) */
         int32_t radio_power;
         mjd_lorap2p_radio_channel_t radio_channel;
         uint32_t radio_watchdog_timeout; /*!< milliseconds (60000=1minute), decimal number representing the time-out length for the Watchdog Timer, from 0 to 4294967295. Set to ‘0’ to disable this functionality. */
@@ -71,7 +77,7 @@ typedef struct {
 }
 
 typedef struct {
-        uint8_t destination_address[6];
+        uint8_t destination_address[3];
         uint8_t len_payload; /*<! */
         uint8_t* payload; /*<! PTR to payload. Typically a Protobuf buffer */
 } mjd_lorap2p_data_frame_input_t;
@@ -85,10 +91,10 @@ typedef struct {
 typedef struct {
         uint8_t _prefix[3]; /*!< <~> */
         uint8_t _frame_type; /*!< D=Data */
-        uint8_t source_address[6]; /*<! mac addr */
+        uint8_t source_address[3]; /*<! source device addr */
         uint8_t seq_nr; /*!< tx frame sequence nr */
         uint8_t is_retry; /*!< 0=no 1=yes */
-        uint8_t destination_address[6]; /*<! mac addr @source mjd_lorap2p_data_frame_input_t */
+        uint8_t destination_address[3]; /*<! destination device addr @source mjd_lorap2p_data_frame_input_t */
         uint8_t len_payload; /*<! @source mjd_lorap2p_data_frame_input_t */
         uint8_t* payload; /*<! PTR to payload @source mjd_lorap2p_data_frame_input_t */
 } mjd_lorap2p_data_frame_t;
@@ -110,12 +116,13 @@ typedef struct { /* TODO */
 } mjd_lorap2p_ack_frame_t;
 
 #define MJD_LORAP2P_ACK_FRAME_DEFAULT() { \
-    ._prefix = {'<','>'}, \
 }
 
 /**
  * Function declarations
  */
+esp_err_t mjd_lorap2p_string_to_addr(const char * param_ptr_input, uint8_t param_ptr_addr[], size_t param_size_addr) ;
+esp_err_t mjd_lorap2p_addr_to_string(const uint8_t param_ptr_input_addr[], size_t param_size_addr, char * param_ptr_output);
 esp_err_t mjd_lorap2p_log_config(mjd_lorap2p_config_t* param_ptr_config);
 esp_err_t mjd_lorap2p_log_data_frame_input(mjd_lorap2p_data_frame_input_t *param_ptr_data_frame);
 esp_err_t mjd_lorap2p_log_data_frame(mjd_lorap2p_data_frame_t *param_ptr_data_frame);

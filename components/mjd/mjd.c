@@ -390,19 +390,19 @@ void mjd_log_clanguage_details() {
     ESP_LOGI(TAG, "    UINT_MAX : %u", UINT_MAX);
 
     ESP_LOGI(TAG, "  int32_t");
-    ESP_LOGI(TAG, "    Storage size (bytes) : %u", sizeof(int32_t));
+    ESP_LOGI(TAG, "    Storage size (bytes): %u", sizeof(int32_t));
     ESP_LOGI(TAG, "    INT_MIN: %i", INT_MIN);
     ESP_LOGI(TAG, "    INT_MAX: %i", INT_MAX);
 
     ESP_LOGI(TAG, "  uint64_t unsigned: bounds, how to print");
-    ESP_LOGI(TAG, "    Storage size (bytes) : %u", sizeof(uint64_t));
+    ESP_LOGI(TAG, "    Storage size (bytes): %u", sizeof(uint64_t));
     uint64_t u64_min = 0ULL;
     uint64_t u64_max = ULONG_LONG_MAX;
     ESP_LOGI(TAG, "    u64_min [EXPECT 0]:                    %" PRIu64 " (0x%" PRIX64 ")", u64_min, u64_min);
     ESP_LOGI(TAG, "    u64_max [EXPECT 18446744073709551615]: %" PRIu64 " (0x%" PRIX64 ")", u64_max, u64_max);
 
     ESP_LOGI(TAG, "  int64_t: bounds, how to print");
-    ESP_LOGI(TAG, "    Storage size (bytes) : %u", sizeof(int64_t));
+    ESP_LOGI(TAG, "    Storage size (bytes): %u", sizeof(int64_t));
     int64_t s64_min = (-1 * __LONG_LONG_MAX__) - 1;
     int64_t s64_max = __LONG_LONG_MAX__; // 0x7FFFFFFFFFFFFFFFLL
     ESP_LOGI(TAG, "     s64_min [EXPECT  -9223372036854775808]: %" PRIi64 " (0x%" PRIX64 ")", s64_min, s64_min);

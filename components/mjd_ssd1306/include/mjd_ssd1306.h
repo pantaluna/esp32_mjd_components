@@ -58,13 +58,14 @@ typedef enum {
  *
  */
 typedef struct {
-        bool manage_i2c_driver;
+    bool manage_i2c_driver;
         uint8_t i2c_slave_addr;
         i2c_port_t i2c_port_num;
         gpio_num_t i2c_scl_gpio_num;
         gpio_num_t i2c_sda_gpio_num;
 
         mjd_ssd1306_oled_dimension_t oled_dimension;
+        uint8_t oled_flip_mode; /*!< 0: default, the screen is at the right of the pin row. 1: flip it (if you mounted the oled board the other way around). */
 
         u8g2_t _u8g2; /*!< Instance of the U8G2 component */
         uint8_t _y_first_line;   /*!< pixels, Y coordinate top->down. Depends on selected font */
@@ -78,6 +79,7 @@ typedef struct {
     .i2c_scl_gpio_num = -1, \
     .i2c_sda_gpio_num = -1, \
     .oled_dimension = MJD_SSD1306_OLED_DIMENSION_DEFAULT, \
+    .oled_flip_mode = 0, \
     ._y_first_line = 0, \
     ._y_line_spacing = 0, \
 };

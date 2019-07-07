@@ -54,6 +54,98 @@ static mjd_lorap2p_radio_channel_config_t _mjd_lorap2p_radio_channel_configs[4] 
                                 MJD_LORABEE_CODING_RATE_4_8 }
             };
 
+/**********
+ * NETWORK ADDRESSES
+ *
+ * Net#1 Edge Gateway:      01:00:00
+ * Net#1 First Device:      01:00:01
+ * Net#1 Broadcast Address: 01:FF:FF TODO
+ *
+ * @example "01:00:01"
+ * @doc https://stackoverflow.com/questions/20553805/how-to-convert-a-mac-address-in-string-to-array-of-integers
+ * @doc https://stackoverflow.com/questions/4162923/calculate-length-of-array-in-c-by-using-function
+ *
+ */
+esp_err_t mjd_lorap2p_string_to_addr(const char * param_ptr_input, uint8_t param_ptr_addr[], size_t param_size_addr) {
+    esp_err_t f_retval = ESP_OK;
+
+    const uint32_t LEN_ADDR_ARRAY = 3;
+    uint8_t values[LEN_ADDR_ARRAY];
+
+    if (strlen(param_ptr_input) != strlen("00:00:00")) {
+        memset(param_ptr_addr, 0, LEN_ADDR_ARRAY);
+        f_retval = ESP_ERR_INVALID_ARG;
+        ESP_LOGE(TAG, "%s(). ABORT. param_ptr_input invalid string length", __FUNCTION__);
+        // GOTO
+        goto cleanup;
+    }
+
+    if (param_size_addr != LEN_ADDR_ARRAY) {
+        memset(param_ptr_addr, 0, LEN_ADDR_ARRAY);
+        f_retval = ESP_ERR_INVALID_ARG;
+        ESP_LOGE(TAG, "%s(). ABORT. param_size_addr invalid length %zu (expected %zu)", __FUNCTION__, param_size_addr, LEN_ADDR_ARRAY);
+        // GOTO
+        goto cleanup;
+    }
+
+    if (ARRAY_SIZE(values) != sscanf(param_ptr_input, "%hhX:%hhX:%hhX", &values[0], &values[1], &values[2])) {
+        memset(param_ptr_addr, 0, LEN_ADDR_ARRAY);
+        f_retval = ESP_ERR_INVALID_ARG;
+        ESP_LOGE(TAG, "%s(). ABORT. invalid address in input string", __FUNCTION__);
+        // GOTO
+        goto cleanup;
+    }
+
+    for (uint8_t i = 0; i < LEN_ADDR_ARRAY; ++i) {
+        param_ptr_addr[i] = values[i];
+    }
+
+    ESP_LOGV(TAG, "%s(). () param_ptr_input (HEXDUMP)", __FUNCTION__);
+    ESP_LOG_BUFFER_HEXDUMP(TAG, param_ptr_input,  1 + strlen(param_ptr_input), ESP_LOG_VERBOSE);  // +1 to see the \0
+    ESP_LOGV(TAG, "%s(). () param_ptr_addr (HEXDUMP)", __FUNCTION__);
+    ESP_LOG_BUFFER_HEXDUMP(TAG, param_ptr_addr, LEN_ADDR_ARRAY, ESP_LOG_VERBOSE); // @important Cannot use ARRAY_SIZE(param_ptr_mac)!
+
+    // LABEL
+    cleanup: ;
+
+    return f_retval;
+}
+
+esp_err_t mjd_lorap2p_addr_to_string(const uint8_t param_ptr_input_addr[], size_t param_size_addr, char * param_ptr_output) {
+    esp_err_t f_retval = ESP_OK;
+
+    const size_t LEN_ADDR_ARRAY = 3;
+    const size_t LEN_STRING = 8;
+
+    strcpy(param_ptr_output, "");
+
+    if (param_size_addr != LEN_ADDR_ARRAY) {
+        f_retval = ESP_ERR_INVALID_ARG;
+        ESP_LOGE(TAG, "%s(). ABORT. param_size_addr invalid length %zu (expected %zu)", __FUNCTION__, param_size_addr, LEN_ADDR_ARRAY);
+        // GOTO
+        goto cleanup;
+    }
+
+    size_t len_sprintf = sprintf(param_ptr_output, "%hhX:%hhX:%hhX",
+            param_ptr_input_addr[0], param_ptr_input_addr[1], param_ptr_input_addr[2]);
+    if (len_sprintf != LEN_STRING) {
+        f_retval = ESP_ERR_INVALID_ARG;
+        ESP_LOGE(TAG, "%s(). ABORT. resulting string length is %zu (expecting %zu)", __FUNCTION__, len_sprintf, LEN_STRING);
+        // GOTO
+        goto cleanup;
+    }
+
+    ESP_LOGV(TAG, "%s(). () param_ptr_input_addr (HEXDUMP)", __FUNCTION__);
+    ESP_LOG_BUFFER_HEXDUMP(TAG, param_ptr_input_addr, param_size_addr, ESP_LOG_VERBOSE); // @important Cannot use ARRAY_SIZE()!
+    ESP_LOGV(TAG, "%s(). () param_ptr_output (HEXDUMP)", __FUNCTION__);
+    ESP_LOG_BUFFER_HEXDUMP(TAG, param_ptr_output,  1 + strlen(param_ptr_output), ESP_LOG_VERBOSE);  // +1 to see the \0
+
+    // LABEL
+    cleanup: ;
+
+    return f_retval;
+}
+
 /**************************************
  * PUBLIC.
  *
@@ -76,7 +168,8 @@ esp_err_t mjd_lorap2p_log_config(mjd_lorap2p_config_t* param_ptr_config) {
     ESP_LOGI(TAG, "  %32s = %i", "gpio_num_t uart_rx_gpio_num", param_ptr_config->uart_rx_gpio_num);
     ESP_LOGI(TAG, "  %32s = %i", "gpio_num_t reset_gpio_num", param_ptr_config->reset_gpio_num);
 
-    ESP_LOGI(TAG, "  %32s = "MJDMACFMT, "radio_device_address", MJDMAC2STR(param_ptr_config->radio_device_address));
+    ESP_LOGI(TAG, "  %32s = "MJDLORAP2PADDRFMT, "radio_device_address", MJDLORAP2PADDRSTR(param_ptr_config->radio_device_address)
+    );
 
     ESP_LOGI(TAG, "  %32s = %i", "radio_power", param_ptr_config->radio_power);
     ESP_LOGI(TAG, "  %32s = %i", "radio_channel", param_ptr_config->radio_channel);
@@ -100,7 +193,9 @@ esp_err_t mjd_lorap2p_log_data_frame_input(mjd_lorap2p_data_frame_input_t *param
 
     ESP_LOGI(TAG, "Log mjd_lorap2p_data_frame_input_t* param_ptr_data:");
 
-    ESP_LOGI(TAG, "  %32s = "MJDMACFMT, "destination_address", MJDMAC2STR(param_ptr_data->destination_address));
+    ESP_LOGI(TAG, "  %32s = "MJDLORAP2PADDRFMT,
+             "destination_address", MJDLORAP2PADDRSTR(param_ptr_data->destination_address)
+    );
     ESP_LOGI(TAG, "  %32s = %u", "len_payload", param_ptr_data->len_payload);
     ESP_LOGI(TAG, "  %32s = %s", "payload", param_ptr_data->payload);
     ESP_LOG_BUFFER_HEXDUMP(TAG, param_ptr_data->payload, param_ptr_data->len_payload, ESP_LOG_INFO);
@@ -119,11 +214,17 @@ esp_err_t mjd_lorap2p_log_data_frame(mjd_lorap2p_data_frame_t *param_ptr_data) {
     ESP_LOGI(TAG, "Log mjd_lorap2p_data_frame_t* param_ptr_data:");
 
     ESP_LOGI(TAG, "  %32s = %c%c%c", "_prefix", param_ptr_data->_prefix[0], param_ptr_data->_prefix[1], param_ptr_data->_prefix[2]);
-    ESP_LOGI(TAG, "  %32s = %u", "_frame_type", param_ptr_data->_frame_type);
-    ESP_LOGI(TAG, "  %32s = "MJDMACFMT, "source_address", MJDMAC2STR(param_ptr_data->source_address));
+    ESP_LOGI(TAG, "  %32s = %c", "_frame_type", param_ptr_data->_frame_type);
+    ESP_LOGI(TAG, "  %32s = "MJDLORAP2PADDRFMT,
+             "source_address",
+             MJDLORAP2PADDRSTR(param_ptr_data->source_address)
+    );
     ESP_LOGI(TAG, "  %32s = %u", "seq_nr", param_ptr_data->seq_nr);
     ESP_LOGI(TAG, "  %32s = %u", "is_retry", param_ptr_data->is_retry);
-    ESP_LOGI(TAG, "  %32s = "MJDMACFMT, "destination_address", MJDMAC2STR(param_ptr_data->destination_address));
+    ESP_LOGI(TAG, "  %32s = "MJDLORAP2PADDRFMT,
+             "destination_address",
+             MJDLORAP2PADDRSTR(param_ptr_data->destination_address)
+    );
     ESP_LOGI(TAG, "  %32s = %u", "len_payload", param_ptr_data->len_payload);
     ESP_LOGI(TAG, "  %32s = %s", "payload", param_ptr_data->payload);
     ESP_LOG_BUFFER_HEXDUMP(TAG, param_ptr_data->payload, param_ptr_data->len_payload, ESP_LOG_INFO);
@@ -165,7 +266,6 @@ esp_err_t mjd_lorap2p_init(mjd_lorap2p_config_t* param_ptr_config) {
     }
 
     // LORAP2P Data Structure
-    esp_efuse_mac_get_default(param_ptr_config->radio_device_address);
 
     // LORABEE
     param_ptr_config->lorabee_config.uart_port_num = param_ptr_config->uart_port_num;
@@ -268,9 +368,14 @@ esp_err_t mjd_lorap2p_tx(mjd_lorap2p_config_t* param_ptr_config,
     /*
      * Transfer input params param_ptr_data_frame_input => data_frame
      * & Fill derived & calculated values
+     * @important When _frame_seq_nr wraps around when incrementing (uint8_t 255+1=0 -> 1) then change value 0 to 1!
      */
     memcpy(data_frame.source_address, param_ptr_config->radio_device_address, sizeof(data_frame.source_address));
-    data_frame.seq_nr = ++_frame_seq_nr;
+    _frame_seq_nr += 1;
+    if (_frame_seq_nr == 0) {
+        _frame_seq_nr = 1;
+    }
+    data_frame.seq_nr = _frame_seq_nr;
     data_frame.is_retry = 0; // First tx is not a retry-frame
     memcpy(data_frame.destination_address, param_ptr_data_frame_input->destination_address,
             sizeof(data_frame.destination_address));
@@ -301,17 +406,11 @@ esp_err_t mjd_lorap2p_tx(mjd_lorap2p_config_t* param_ptr_config,
         payload_lorabee_[pos++] = data_frame.source_address[0];
         payload_lorabee_[pos++] = data_frame.source_address[1];
         payload_lorabee_[pos++] = data_frame.source_address[2];
-        payload_lorabee_[pos++] = data_frame.source_address[3];
-        payload_lorabee_[pos++] = data_frame.source_address[4];
-        payload_lorabee_[pos++] = data_frame.source_address[5];
         payload_lorabee_[pos++] = data_frame.seq_nr;
         payload_lorabee_[pos++] = data_frame.is_retry;
         payload_lorabee_[pos++] = data_frame.destination_address[0];
         payload_lorabee_[pos++] = data_frame.destination_address[1];
         payload_lorabee_[pos++] = data_frame.destination_address[2];
-        payload_lorabee_[pos++] = data_frame.destination_address[3];
-        payload_lorabee_[pos++] = data_frame.destination_address[4];
-        payload_lorabee_[pos++] = data_frame.destination_address[5];
         payload_lorabee_[pos++] = data_frame.len_payload;
         ptr_payload_data_frame = data_frame.payload;
         for (int iter=0; iter < data_frame.len_payload; iter++) {
@@ -337,7 +436,14 @@ esp_err_t mjd_lorap2p_tx(mjd_lorap2p_config_t* param_ptr_config,
             goto cleanup;
         }
 
-        // Mark frame#2..n as retries! SO they can be de-duplicated at the Edge Forwarder Service (Node.js).
+        /*
+         * @important Delay at least ---3--- seconds after each TX to ensure the receiver processes at least 1 of the 3 transmitted messages!
+         */
+        vTaskDelay(RTOS_DELAY_3SEC);
+
+        /*
+         * Mark frame#2..n as retries! SO they can be de-duplicated at the Edge Forwarder Service (Node.js).
+         */
         data_frame.is_retry = 1;
     }
 

@@ -260,7 +260,7 @@ esp_err_t mjd_wifi_sta_start() {
         goto cleanup;
     }
 
-    uxBits = xEventGroupWaitBits(_wifi_event_group, WIFI_CONNECTED_BIT, pdFALSE, pdTRUE, RTOS_DELAY_5SEC); // (1-3sec=AUTH_FAIL!) RTOS_DELAY_5SEC RTOS_DELAY_10SEC
+    uxBits = xEventGroupWaitBits(_wifi_event_group, WIFI_CONNECTED_BIT, pdFALSE, pdTRUE, RTOS_DELAY_6SEC); // (1-3sec=AUTH_FAIL!) RTOS_DELAY_1SEC RTOS_DELAY_6SEC
     if ((uxBits & WIFI_CONNECTED_BIT) == 0) {
         ESP_LOGW(TAG, "FIRST TIME esp_wifi_start() failed to connect. Wait 5 seconds and try a 2nd time...");
 

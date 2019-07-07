@@ -36,7 +36,7 @@ typedef struct {
         gpio_num_t cs;
         gpio_num_t reset;
         gpio_num_t dc;
-} u8g2_esp32_hal_t;
+}u8g2_esp32_hal_t;
 
 #define U8G2_ESP32_HAL_DEFAULT { \
     U8G2_ESP32_HAL_UNDEFINED, \

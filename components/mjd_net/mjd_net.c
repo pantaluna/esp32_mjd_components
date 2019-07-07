@@ -242,7 +242,8 @@ esp_err_t mjd_net_is_internet_reachable() {
 esp_err_t mjd_net_sync_current_datetime(bool param_forced) {
     // @dependency A working Internet connection
     // @doc The func only syncs the time when it is really necessary (unless param_forced is used).
-    // @doc The time_t variable represents the time as the number of seconds from a date called Epoch (01/01/1970).
+    // @doc The time_t variable is an integral value that represents the time as the number of seconds
+    //      from the date called Epoch aka. Unix Epoch (= 00:00 hours, Jan 1, 1970 UTC).
     // @doc Use localtime_r() to split the time_t variable into the different time values (year, month, day, ...) of a tm struct.
     // @doc https://www.ibm.com/support/knowledgecenter/en/ssw_ibm_i_72/apis/settod.htm
     ESP_LOGD(TAG, "%s()", __FUNCTION__);
@@ -299,11 +300,11 @@ esp_err_t mjd_net_sync_current_datetime(bool param_forced) {
 
         // LOOP wait for updated datetime XOR timeout from esptimer
         bool has_timed_out = false;
-        const double SNTP_TIMEOUT_SECONDS = 15.0; // 15.0 | @tip Test timeout with value 0.0 (it will fail immediately after the delay).
+        const double SNTP_TIMEOUT_SECONDS = 15.0; // 15.0 @tip Test timeout with value 0.0 (it will fail immediately after the delay).
         double timer_counter_value_seconds = 0;
 
         while (timeinfo.tm_year < (2015 - 1900)) {
-            ESP_LOGI(TAG, "Time not set yet by lwip-SNTP, waiting for response...");
+            ESP_LOGD(TAG, "Time not set yet by lwip-SNTP, waiting for response...");
 
             timer_get_counter_time_sec(TIMER_GROUP_0, TIMER_0, &timer_counter_value_seconds);
             if (timer_counter_value_seconds > SNTP_TIMEOUT_SECONDS) {

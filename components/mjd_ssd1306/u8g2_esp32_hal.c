@@ -160,8 +160,9 @@ uint8_t u8g2_esp32_i2c_byte_cb(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void 
 
     case U8X8_MSG_BYTE_END_TRANSFER: {
         ESP_LOGD(TAG, "End I2C transfer.");
-        ESP_ERROR_CHECK_WITHOUT_ABORT(i2c_master_stop(handle_i2c));  // RHMOD Change ESP_ERROR_CHECK to ESP_ERROR_CHECK_WITHOUT_ABORT
-        ESP_ERROR_CHECK_WITHOUT_ABORT(i2c_master_cmd_begin(u8g2_esp32_hal.i2c_port_num, handle_i2c, I2C_TIMEOUT_MS / portTICK_RATE_MS)); // RHMOD Change ESP_ERROR_CHECK to ESP_ERROR_CHECK_WITHOUT_ABORT
+        ESP_ERROR_CHECK_WITHOUT_ABORT(i2c_master_stop(handle_i2c)); // RHMOD Change ESP_ERROR_CHECK to ESP_ERROR_CHECK_WITHOUT_ABORT
+        ESP_ERROR_CHECK_WITHOUT_ABORT(
+                i2c_master_cmd_begin(u8g2_esp32_hal.i2c_port_num, handle_i2c, I2C_TIMEOUT_MS / portTICK_RATE_MS)); // RHMOD Change ESP_ERROR_CHECK to ESP_ERROR_CHECK_WITHOUT_ABORT
         i2c_cmd_link_delete(handle_i2c);
         break;
     }

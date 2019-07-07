@@ -173,6 +173,8 @@ esp_err_t mjd_ssd1306_init(mjd_ssd1306_config_t* param_ptr_config) {
         goto cleanup;
     }
 
+    u8g2_SetFlipMode(&param_ptr_config->_u8g2, param_ptr_config->oled_flip_mode);
+
     // DEVTEMP
     /////mjd_rtos_wait_forever();
 
