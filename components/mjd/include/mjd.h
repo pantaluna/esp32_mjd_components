@@ -261,22 +261,27 @@ void mjd_log_wakeup_details();
 #define HUZZAH32_GPIO_BITPIN_LED (1ULL<<HUZZAH32_GPIO_NUM_LED)
 
 typedef enum {
-    LED_WIRING_TYPE_DEFAULT = 1,        /*!< Default */
-    LED_WIRING_TYPE_DIODE_TO_GND = 1,   /*!< Resistor    .. LED-DIODE=> .. GND (MCU Adafruit HUZZAH32) */
-    LED_WIRING_TYPE_DIODE_FROM_VCC = 2, /*!< <=LED-DIODE .. Resistor    .. VCC (MCU Lolin32Lite, LOLIN D32) */
+    LED_WIRING_TYPE_LED_LOW_SIDE = 1,  /*!< PCB: GPIO .. Resistor .. LED-DIODE|> .. GND (MCU Adafruit HUZZAH32) */
+    LED_WIRING_TYPE_LED_HIGH_SIDE = 2, /*!< PCB: GPIO .. |<LED-DIODE .. Resistor .. VCC (MCU Lolin32Lite, LOLIN D32) */
 } mjd_led_wiring_type_t;
 
 typedef struct {
-    uint32_t is_initialized;           /*!< Helper to know if an element was initialized, or not. Mark 1. */
+    uint32_t is_init;                  /*!< Helper to know if an element was initialized, or not. Mark 1. */
     uint64_t gpio_num;                 /*!< GPIO num pin */
     mjd_led_wiring_type_t wiring_type; /*!< Wiring Type */
 } mjd_led_config_t;
 
-void mjd_led_config(const mjd_led_config_t *led_config);
-void mjd_led_on(int gpio_nr);
-void mjd_led_off(int gpio_nr);
-void mjd_led_blink_times(int gpio_nr, int times);
-void mjd_led_mark_error(int gpio_nr);
+#define MJD_LED_CONFIG_DEFAULT() { \
+    .is_init = false, \
+    .gpio_num = GPIO_NUM_MAX, \
+    .wiring_type = LED_WIRING_TYPE_LED_LOW_SIDE, \
+}
+
+void mjd_led_config(const mjd_led_config_t *param_led_config);
+void mjd_led_on(int param_gpio_nr);
+void mjd_led_off(int param_gpio_nr);
+void mjd_led_blink_times(int param_gpio_nr, int param_count);
+void mjd_led_mark_error(int param_gpio_nr);
 
 #ifdef __cplusplus
 }

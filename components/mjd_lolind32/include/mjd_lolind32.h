@@ -1,8 +1,8 @@
 /*
  * Goto README.md for instructions
  */
-#ifndef __MJD_HUZZAH32_H__
-#define __MJD_HUZZAH32_H__
+#ifndef __MJD_LOLIND32_H__
+#define __MJD_LOLIND32_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -21,7 +21,7 @@ extern "C" {
 
 /**
  * @brief Return the actual battery voltage level using ADC1.
- *        The GPIO#35 (VBAT SENSE) outputs the battery voltage measurement (halved value). This pin is not exposed on the HUZZAH32 board.
+ *        The GPIO#35 (VBAT SENSE) outputs the battery voltage measurement (halved value). That pin is not exposed on the development board.
  *
  * => Calibration Characterization is based on the features of the ESP32 chip.
  *     a) The Reference voltage stored in eFuse BLOCK0.
@@ -30,11 +30,7 @@ extern "C" {
  *
  * @return float battery voltage level (unit=Volt)
  *
- * @dependency This func is specific for the Adafruit HUZZAH32 development board.
- *
- * @dependency Kconfig CONFIG_MJD_HUZZAH32_REFERENCE_VOLTAGE_MV (default 1100)
- *     The huzzah32_adc_voltage_reference (1100) is specific for this board when battery powered.
- *     It was measured using the func mjd_huzzah32_route_vref_to_gpio26() and stored in Kconfig.
+ * @dependency This func is specific for the LOLIN D32 development board.
  *
  * @important The battery voltage level reading is INVALID when powered by USB and no battery is connected (it will show a positive voltage of +-2*2.1V, not the expected 0V!).
  *
@@ -49,7 +45,7 @@ extern "C" {
  * - Maximum charged voltage   3.6V (halved = 1.8V).
  *
  */
-float mjd_huzzah32_get_battery_voltage();
+float mjd_lolind32_get_battery_voltage();
 
 /**
  * @brief 1. Report the ESP32 eFuse contents in relation to the ADC Calibration Characterization.
@@ -70,27 +66,26 @@ float mjd_huzzah32_get_battery_voltage();
  * @return void
  *
  */
-void mjd_huzzah32_log_adc_characterisations();
+void mjd_lolind32_log_adc_characterisations();
 
 /**
- * @brief Route the actual VREF Voltage Reference of the ESP32 to a GPIO# using ADC2. Then use a multimeter to determine the voltage. The value will be around 1100 (milliVolt).
+ * @brief Route the actual VREF Voltage Reference of the ESP32 to GPIO#26 using ADC2. Then use a multimeter to determine the voltage. The value will be around 1100 (mV).
  *
  * @param int param_gpio_nr
  *
  * @return
  *     - ESP_OK Success
  *
- * @dependency This func is specific for the Adafruit HUZZAH32 development board.
+ * @dependency This func is specific for the LOLIN D32 development board.
 
- * @important The VREF for the HUZZAH32 that is used in the func mjd_huzzah32_get_battery_voltage() is stored in Kconfig CONFIG_MJD_HUZZAH32_REFERENCE_VOLTAGE_MV.
- * @important This code is not needed to measuring the actual BATTERY voltage (we just need to measure the VREF value once if no eFuses are written in the ESP32 module).
+ * @important This code is not needed to measuring the actual BATTERY voltage (we just need to measure the VREF value once if no eFuses are written).
  * @important Do not enable Wifi or Bluetooth when running this func; due to a conflict when using ADC2.
  *
  */
-esp_err_t mjd_huzzah32_route_vref_to_gpio(int param_gpio_nr);
+esp_err_t mjd_lolind32_route_vref_to_gpio(int param_gpio_nr);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __MJD_HUZZAH32_H__ */
+#endif /* __MJD_LOLIND32_H__ */

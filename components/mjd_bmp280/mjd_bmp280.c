@@ -217,21 +217,6 @@ esp_err_t mjd_bmp280_deinit(const mjd_bmp280_config_t* config) {
             // LABEL
             goto cleanup;
         }
-        // @purpose Save power consumption.
-        //   1. Reset an gpio to default state (select gpio function, enable pullup and disable input and output).
-        //   2. it also configures the IOMUX for this pin to the GPIO function, and disconnects any other peripheral output configured via GPIO Matrix.
-        f_retval = gpio_reset_pin(config->i2c_scl_gpio_num);
-        if (f_retval != ESP_OK) {
-            ESP_LOGE(TAG, "ABORT. Cannot gpio_reset_pin(SCL) | error (%i)", f_retval);
-            // LABEL
-            goto cleanup;
-        }
-        f_retval = gpio_reset_pin(config->i2c_sda_gpio_num);
-        if (f_retval != ESP_OK) {
-            ESP_LOGE(TAG, "ABORT. Cannot gpio_reset_pin(SDA) | error (%i)", f_retval);
-            // LABEL
-            goto cleanup;
-        }
     }
 
     // LABEL

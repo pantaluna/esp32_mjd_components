@@ -517,83 +517,122 @@ void mjd_log_wakeup_details() {
 /**********
  * ESP32: LED
  */
-static mjd_led_config_t led_config_list[GPIO_PIN_COUNT]; // @dep gpio.h
+static mjd_led_config_t _led_config_list[GPIO_PIN_COUNT]; // @dep gpio.h
 
-void mjd_led_config(const mjd_led_config_t *led_config) {
+void mjd_led_config(const mjd_led_config_t *param_ptr_config) {
     ESP_LOGD(TAG, "%s()", __FUNCTION__);
 
+    esp_err_t f_retval = ESP_OK;
+
     gpio_config_t io_conf;
-    io_conf.pin_bit_mask = (1ULL << led_config->gpio_num);
+    io_conf.pin_bit_mask = (1ULL << param_ptr_config->gpio_num);
     io_conf.mode = GPIO_MODE_OUTPUT;
     io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
     io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
     io_conf.intr_type = GPIO_INTR_DISABLE;
-    gpio_config(&io_conf);
+    f_retval = gpio_config(&io_conf);
+    if (f_retval != ESP_OK) {
+        ESP_LOGE(TAG, "%s(). gpio_config() err %i (%s)", __FUNCTION__, f_retval, esp_err_to_name(f_retval));
+        // GOTO
+        goto cleanup;
+    }
 
-    led_config_list[led_config->gpio_num] = *led_config;
-    led_config_list[led_config->gpio_num].is_initialized = 1; // Mark as in use.
+    _led_config_list[param_ptr_config->gpio_num] = *param_ptr_config;
+    _led_config_list[param_ptr_config->gpio_num].is_init = true; // Mark as initialized
+
+    // LABEL
+    cleanup: ;
 }
 
-void mjd_led_on(int gpio_nr) {
+void mjd_led_on(int param_gpio_nr) {
     ESP_LOGD(TAG, "%s()", __FUNCTION__);
 
-    if (led_config_list[gpio_nr].is_initialized != 1) {
-        ESP_LOGE(TAG, "  ABORT. mjd_led_config() was not called beforehand");
+    esp_err_t f_retval = ESP_OK;
+
+    if (_led_config_list[param_gpio_nr].is_init == false) {
+        ESP_LOGE(TAG, "%s(). ABORT. mjd_led_config() was not called beforehand", __FUNCTION__);
         return;
     }
 
     int level = 1;
-    if (led_config_list[gpio_nr].wiring_type == LED_WIRING_TYPE_DIODE_FROM_VCC) {
+    if (_led_config_list[param_gpio_nr].wiring_type == LED_WIRING_TYPE_LED_HIGH_SIDE) {
         level = 0;
     }
-    ESP_ERROR_CHECK(gpio_set_level(gpio_nr, level));
+    f_retval = gpio_set_level(param_gpio_nr, level);
+    if (f_retval != ESP_OK) {
+        ESP_LOGE(TAG, "%s(). gpio_set_level() | err %i (%s)", __FUNCTION__, f_retval, esp_err_to_name(f_retval));
+        // GOTO
+        goto cleanup;
+    }
+
+    // LABEL
+    cleanup: ;
+
 }
 
-void mjd_led_off(int gpio_nr) {
+void mjd_led_off(int param_gpio_nr) {
     ESP_LOGD(TAG, "%s()", __FUNCTION__);
 
-    if (led_config_list[gpio_nr].is_initialized != 1) {
-        ESP_LOGE(TAG, "  ABORT. mjd_led_config() was not called beforehand");
+    esp_err_t f_retval = ESP_OK;
+
+    if (_led_config_list[param_gpio_nr].is_init == false) {
+        ESP_LOGE(TAG, "%s(). ABORT. mjd_led_config() was not called beforehand", __FUNCTION__);
         return;
     }
 
     int level = 0;
-    if (led_config_list[gpio_nr].wiring_type == LED_WIRING_TYPE_DIODE_FROM_VCC) {
+    if (_led_config_list[param_gpio_nr].wiring_type == LED_WIRING_TYPE_LED_HIGH_SIDE) {
         level = 1;
     }
-    ESP_ERROR_CHECK(gpio_set_level(gpio_nr, level));
+    f_retval = gpio_set_level(param_gpio_nr, level);
+    if (f_retval != ESP_OK) {
+        ESP_LOGE(TAG, "%s(). gpio_set_level() | err %i (%s)", __FUNCTION__, f_retval, esp_err_to_name(f_retval));
+        // GOTO
+        goto cleanup;
+    }
+
+    // LABEL
+    cleanup: ;
 }
 
-void mjd_led_blink_times(int gpio_nr, int times) {
+void mjd_led_blink_times(int param_gpio_nr, int param_count) {
     ESP_LOGD(TAG, "%s()", __FUNCTION__);
 
-    if (led_config_list[gpio_nr].is_initialized != 1) {
+    if (_led_config_list[param_gpio_nr].is_init == false) {
         ESP_LOGE(TAG, "  ABORT. mjd_led_config() was not called beforehand");
-        return;
+        // GOTO
+        goto cleanup;
     }
 
     int i = 0;
-    while (++i <= times) {
-        mjd_led_on(gpio_nr);
+    while (++i <= param_count) {
+        mjd_led_on(param_gpio_nr);
         vTaskDelay(RTOS_DELAY_250MILLISEC);
-        mjd_led_off(gpio_nr);
+        mjd_led_off(param_gpio_nr);
         vTaskDelay(RTOS_DELAY_250MILLISEC);
     }
+
+    // LABEL
+    cleanup: ;
 }
 
-void mjd_led_mark_error(int gpio_nr) {
+void mjd_led_mark_error(int param_gpio_nr) {
     ESP_LOGD(TAG, "%s()", __FUNCTION__);
 
-    if (led_config_list[gpio_nr].is_initialized != 1) {
+    if (_led_config_list[param_gpio_nr].is_init == false) {
         ESP_LOGE(TAG, "  ABORT. mjd_led_config() was not called beforehand");
-        return;
+        // GOTO
+        goto cleanup;
     }
 
     int i = 0;
     while (++i <= 5) {
-        mjd_led_on(gpio_nr);
+        mjd_led_on(param_gpio_nr);
         vTaskDelay(RTOS_DELAY_50MILLISEC);
-        mjd_led_off(gpio_nr);
+        mjd_led_off(param_gpio_nr);
         vTaskDelay(RTOS_DELAY_50MILLISEC);
     }
+
+    // LABEL
+    cleanup: ;
 }

@@ -44,7 +44,7 @@ git commit -m "Updated"
 git config credential.helper store
 git push --set-upstream origin master
 
-git tag --annotate v1.9 --message "Add component mjd_jsnsr04t: JSN-SR04T-2.0 Waterproof Ultrasonic Sensor Module"
+git tag --annotate v1.10 --message "Add component mjd_lolind32: for the LOLIN D32 development board. Update component mjd_huzzah32: for the Adafruit HUZZAH32 development board"
 git push origin --tags
 
 git describe --tags --dirt

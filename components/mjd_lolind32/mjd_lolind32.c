@@ -4,12 +4,12 @@
 
 // Component header file(s)
 #include "mjd.h"
-#include "mjd_huzzah32.h"
+#include "mjd_lolind32.h"
 
 /*
  * Logging
  */
-static const char TAG[] = "mjd_huzzah32";
+static const char TAG[] = "mjd_lolind32";
 
 /*
  * Data definitions
@@ -24,7 +24,7 @@ static const char TAG[] = "mjd_huzzah32";
  * PUBLIC.
  *
  */
-float mjd_huzzah32_get_battery_voltage() {
+float mjd_lolind32_get_battery_voltage() {
     ESP_LOGD(TAG, "%s()", __FUNCTION__);
 
     /**************************************************************************
@@ -34,7 +34,7 @@ float mjd_huzzah32_get_battery_voltage() {
     float battery_voltage_float = 0;
 
     // FUNC
-    const uint32_t huzzah32_adc_voltage_reference = CONFIG_MJD_HUZZAH32_REFERENCE_VOLTAGE_MV; // @dep KConfig @unit millivolt. Reference Voltage = +-1100mV. This value is specific for this board; it was measured using the func mjd_huzzah32_route_vref_to_gpio26() [see documentation for instructions]
+    const uint32_t adc_voltage_reference = 1100; // @unit millivolt. Reference Voltage = +-1100mV. This value is not used for measuring the battery voltage because the LOLIN D32 has eFuse "VREF Voltage Reference" BLOCK0.
     const adc_bits_width_t adc_width = ADC_WIDTH_BIT_10;    // BIT_10=0..1023
     const adc1_channel_t adc_channel = ADC1_GPIO35_CHANNEL; // ADC1_GPIO35_CHANNEL ADC1_CHANNEL_7_GPIO_NUM
     const adc_atten_t adc_atten = ADC_ATTEN_DB_11;
@@ -46,12 +46,12 @@ float mjd_huzzah32_get_battery_voltage() {
     // Characterize ADC1
     esp_adc_cal_characteristics_t adc_cal_characteristics =
                 { 0 };
-    esp_adc_cal_characterize(ADC_UNIT_1, adc_atten, adc_width, huzzah32_adc_voltage_reference, &adc_cal_characteristics);
+    esp_adc_cal_characterize(ADC_UNIT_1, adc_atten, adc_width, adc_voltage_reference, &adc_cal_characteristics);
 
     // Logic:
     //   1. ADC read 64 samples (an attempt to reduce noise).
     //   2. Deduct actual battery voltage from the ADC reading.
-    //   3. Double the mV value per the circuit design for getting the HUZZAH32 battery voltage.
+    //   3. Double the mV value per the circuit design for getting the battery voltage (2x 100K voltage divider on PCB)
     //   4. If the Voltage Regulator is disabled Then apply a correction factor.
     uint32_t voltage_mv = 0;
     uint32_t one_voltage_read = 0;
@@ -80,7 +80,7 @@ float mjd_huzzah32_get_battery_voltage() {
     return battery_voltage_float;
 }
 
-void mjd_huzzah32_log_adc_characterisations() {
+void mjd_lolind32_log_adc_characterisations() {
     ESP_LOGD(TAG, "%s()", __FUNCTION__);
 
     ESP_LOGI(TAG, "");
@@ -104,14 +104,14 @@ void mjd_huzzah32_log_adc_characterisations() {
 
     ESP_LOGI(TAG, "");
     ESP_LOGI(TAG, "REPORT: ADC Calibration Characterisation:");
-    const uint32_t huzzah32_adc_voltage_reference = 1100; // @unit millivolt. Reference Voltage = +-1100mV. //Use adc2_vref_to_gpio() to obtain a better estimate
+    const uint32_t adc_voltage_reference = 1100; // @unit millivolt. Reference Voltage = +-1100mV. //Use adc2_vref_to_gpio() to obtain a better estimate
     const adc_bits_width_t adc_width = ADC_WIDTH_BIT_10;    // BIT_10=0..1023
     const adc_atten_t adc_atten = ADC_ATTEN_DB_11;
 
     esp_adc_cal_characteristics_t adc_cal_characteristics =
                 { 0 };
     esp_adc_cal_value_t calibration_value_type = esp_adc_cal_characterize(ADC_UNIT_1, adc_atten, adc_width,
-            huzzah32_adc_voltage_reference, &adc_cal_characteristics);
+            adc_voltage_reference, &adc_cal_characteristics);
 
     if (calibration_value_type == ESP_ADC_CAL_VAL_EFUSE_VREF) {
         ESP_LOGI(TAG, "  - ESP_ADC_CAL_VAL_EFUSE_VREF Using eFuse Vref");
@@ -127,7 +127,7 @@ void mjd_huzzah32_log_adc_characterisations() {
     }
 }
 
-esp_err_t mjd_huzzah32_route_vref_to_gpio(int param_gpio_nr) {
+esp_err_t mjd_lolind32_route_vref_to_gpio(int param_gpio_nr) {
     ESP_LOGD(TAG, "%s()", __FUNCTION__);
 
     /**************************************************************************

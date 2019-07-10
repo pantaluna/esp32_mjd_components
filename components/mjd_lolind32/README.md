@@ -1,5 +1,5 @@
-# ESP-IDF MJD Adafruit HUZZAH32 component
-This component "mjd_huzzah32" has been developed to expose specific functionality for the Adafruit HUZZAH32 development board (ESP32). This component is developed for the ESP-IDF V3 framework for the ESP32 hardware from Espressif.
+# ESP-IDF MJD LOLIN D32 component
+This component "mjd_lolind32" has been developed to expose specific functionality for the WEMOS LOLIN D32 development board (ESP32). This component is developed for the ESP-IDF V3 framework for the ESP32 hardware from Espressif.
 
 The features of this component:
 
@@ -23,37 +23,39 @@ https://docs.espressif.com/projects/esp-idf/en/latest/api-reference/peripherals/
 
 Three calibration characteristic mechanisms:
 
-* "TP Two Point" BLOCK3: characterization based on Two Point values.
-* "VREF Voltage Reference" BLOCK0: characterization based on the reference voltage. Example dev boards: LOLIN D32.
+* eFuse "TP Two Point" BLOCK3: characterization based on Two Point values.
+
+* eFuse "VREF Voltage Reference" BLOCK0: characterization based on the reference voltage. Example dev boards: LOLIN D32.
+
 * "Default Vref": the ADC reference voltage is provided by the user as a parameter during characterization. Typical value is 1100mV. Example dev boards: Adafruit HUZZAH32.
 
 If "Two Point" or "eFuse Vref" values are unavailable, then the "Default Vref" mechanism will be used.
 
    
 
-**For the Adafruit HUZZAH32 the "Default Vref" method is used to represent the ADC reference voltage because the eFuses for the Two Point method and the VREF Voltage Reference method are missing. So each time you have to specify a value for the ADC calibration characteristics in order to read the voltage via ADC. Typical value is 1100mV.**
+**For the LOLIN D32 the "eFuse VREF Voltage Reference" method is used to represent the ADC reference voltage. It is not required to specify a value for the ADC calibration characteristics to read the voltage via ADC (in fact the manually specified value would be ignored as the eFuse value will be used).**
 
 
 
 ## Example ESP-IDF project
-my_huzzah32_battery_voltage_using_lib
+my_lolind32_battery_voltage_using_lib
 
 
 
 ## Shop Products
-Adafruit HUZZAH32
+LOLIN D32 https://wiki.wemos.cc/products:d32:d32
 
 
 
 ## Data Sheets
-https://learn.adafruit.com/adafruit-huzzah32-esp32-feather
+https://wiki.wemos.cc/products:d32:d32
 
 
 
 ## Wiring Instructions
 Connect a Lion 3.7V battery to the battery connector (ensure you have the polarity correct).
 
-Goto the directory ../../development_boards/ for more information about some development boards.
+Goto the directory ../../development_boards/ for more information about the development boards.
 
 
 

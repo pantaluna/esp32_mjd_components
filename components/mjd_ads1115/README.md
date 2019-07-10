@@ -57,7 +57,7 @@ PIN#  PIN NAME	  Description
 
 The breakout boards contain a ceramic 100nF power-supply bypass capacitor between VCC and GND. The lines VCC and GND each contain a ferrite bead.
 
-The breakout boards contain a 10K pullup resistor for the following pins: I2C SCL, I2C SDA, ALR.
+**The breakout boards contain a 10K pullup resistor for the following pins: I2C SCL, I2C SDA, ALR.**
 
 The use of the ALERT/READY pin is optional.
 
@@ -100,7 +100,7 @@ The breakout boards expose 4 analog pins. You will only wire up the ones you nee
 
 ### I2C Pullup Pulldown Resistors
 
-The breakout boards mentioned above contain a 10K pullup resistor for the following pins: I2C SCL, I2C SDA, ALR.
+**The breakout boards mentioned above contain a 10K pullup resistor for the following pins: I2C SCL, I2C SDA, ALR.**
 
 Therefore it is not needed to wire external 10K pullup resistors from the device pins I2C SCL and I2C SDA to the MCU pin VCC (3V), or to enable the MCU's internal pullups for these device pins.
 

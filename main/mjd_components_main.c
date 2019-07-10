@@ -536,7 +536,7 @@ void main_task(void *pvParameter) {
 
         ESP_LOGI(TAG, "mjd_mac_to_string() bytes AA:BB:CC:DD:EE:FF (OK) => ");
         uint8_t mac_six[6] =
-            { 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF };
+                    { 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF };
         f_retval = mjd_mac_to_string(mac_six, ARRAY_SIZE(mac_six), result_str);
         if (f_retval != ESP_OK) {
             ESP_LOGE(TAG, "mjd_mac_to_string() err %i (%s)", f_retval, esp_err_to_name(f_retval));
@@ -545,7 +545,7 @@ void main_task(void *pvParameter) {
 
         ESP_LOGI(TAG, "mjd_mac_to_string() bytes 01:02:03 (expecting error) => ");
         uint8_t mac_two[2] =
-            { 0x1, 0x2 };
+                    { 0x1, 0x2 };
         f_retval = mjd_mac_to_string(mac_two, ARRAY_SIZE(mac_two), result_str);
         if (f_retval != ESP_OK) {
             ESP_LOGE(TAG, "mjd_mac_to_string() err %i (%s)", f_retval, esp_err_to_name(f_retval));
@@ -895,26 +895,27 @@ void main_task(void *pvParameter) {
 
     mjd_log_memory_statistics();
 
-    mjd_led_config_t led_config =
-                { 0 };
+    mjd_led_config_t led_config = MJD_LED_CONFIG_DEFAULT();
     led_config.gpio_num = MY_LED_ON_DEVBOARD_GPIO_NUM;
-    led_config.wiring_type = MY_LED_ON_DEVBOARD_WIRING_TYPE; // 1 GND MCU Huzzah32 | 2 VCC MCU Lolin32lite
+    led_config.wiring_type = MY_LED_ON_DEVBOARD_WIRING_TYPE; // 1 GND MCU Huzzah32 | 2 VCC MCU Lolin32lite LolinD32
     mjd_led_config(&led_config);
 
-    ESP_LOGI(TAG, "LED on off");
+    ESP_LOGI(TAG, "LED on");
     mjd_led_on(MY_LED_ON_DEVBOARD_GPIO_NUM);
-    vTaskDelay(RTOS_DELAY_500MILLISEC);
+    vTaskDelay(RTOS_DELAY_2SEC);
+
+    ESP_LOGI(TAG, "LED off");
     mjd_led_off(MY_LED_ON_DEVBOARD_GPIO_NUM);
-    vTaskDelay(RTOS_DELAY_1SEC);
+    vTaskDelay(RTOS_DELAY_2SEC);
 
     ESP_LOGI(TAG, "LED blink 3 times");
     mjd_led_blink_times(MY_LED_ON_DEVBOARD_GPIO_NUM, 3);
-    vTaskDelay(RTOS_DELAY_1SEC);
+    vTaskDelay(RTOS_DELAY_2SEC);
 
     ESP_LOGI(TAG, "LED mark error");
     mjd_led_mark_error(MY_LED_ON_DEVBOARD_GPIO_NUM);
 
-    vTaskDelay(RTOS_DELAY_1SEC);
+    vTaskDelay(RTOS_DELAY_2SEC);
 
     // DEVTEMP: HALT
     /////mjd_rtos_wait_forever();
