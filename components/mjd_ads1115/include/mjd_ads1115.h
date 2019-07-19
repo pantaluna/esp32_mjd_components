@@ -27,8 +27,8 @@ extern "C" {
 /**
  * TIMER SETTINGS
  */
-#define MJD_ADS1115_TIMER_GROUP_ID   (TIMER_GROUP_0) // TODO Move this to KConfig.
-#define MJD_ADS1115_TIMER_ID         (TIMER_1)  // @important Use _1 for ADS1115 (_0 is used by mjd_mlx90393). TODO Move this to KConfig.
+#define MJD_ADS1115_TIMER_GROUP_ID   (TIMER_GROUP_1) // @important Use _1 for ADS1115
+#define MJD_ADS1115_TIMER_ID         (TIMER_1)       // @important Use _1 for ADS1115 (_0 is used by mjd_mlx90393). TODO Move this to KConfig.
 
 /**
  * CUSTOM default device settings - see mjd_ads1115_init()

@@ -67,7 +67,6 @@ extern "C" {
 #define MJD_ERR_IO                  (0x110)
 
 #define MJD_ERR_ESP_GPIO            (0x201)
-#define MJD_ERR_ESP_I2C             (0x202)
 #define MJD_ERR_ESP_RMT             (0x203)
 #define MJD_ERR_ESP_RTOS            (0x204)
 #define MJD_ERR_ESP_SNTP            (0x205)
@@ -156,6 +155,21 @@ esp_err_t mjd_crypto_xor_cipher(const uint8_t param_key, uint8_t* param_ptr_valu
  */
 #define SECONDS_PER_DAY               86400
 #define SECONDS_FROM_1970_TO_2000 946684800
+
+/*
+ * @brief Enforce a delay in milliseconds
+ *
+ *  @param param_millisec delay in ms
+ *
+ *  @important For small delays (<= 500 millisec) use ets_delay_us(). This is a blocking func.
+ *  @important For long delays  (>  500 millisec) use vTaskDelay(). Also avoidd that the CPU Watchdog is triggered (x seconds).
+ *
+ *  @important RTOS func vTaskDelay() is not accurate
+ *                  1. Lowest allowed delay is 10 milliseconds;
+ *                  2. Does not work accurately for values < 500millisec;
+ *
+ */
+void mjd_delay_millisec(uint32_t param_millisec);
 
 uint32_t mjd_seconds_to_milliseconds(uint32_t seconds);
 uint32_t mjd_seconds_to_microseconds(uint32_t seconds);

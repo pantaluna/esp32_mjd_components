@@ -19,10 +19,6 @@
 static const char TAG[] = "myapp";
 
 /*
- * TODO DEVICE INFO
- */
-
-/*
  * KConfig: LED, WIFI
  */
 static const int MY_LED_ON_DEVBOARD_GPIO_NUM = CONFIG_MY_LED_ON_DEVBOARD_GPIO_NUM;
@@ -102,13 +98,15 @@ void main_task(void *pvParameter) {
      * MY STANDARD Init
      *
      */
-    mjd_log_wakeup_details();
-    mjd_increment_mcu_boot_count();
-    mjd_log_mcu_boot_count();
     mjd_log_chip_info();
     mjd_log_memory_statistics();
     mjd_set_timezone_utc();
     mjd_log_time();
+
+    mjd_log_wakeup_details();
+    mjd_increment_mcu_boot_count();
+    mjd_log_mcu_boot_count();
+
     ESP_LOGI(TAG,
             "@tip You can also change the log level to DEBUG for more detailed logging and to get insights in what the component is actually doing.");
     ESP_LOGI(TAG, "@doc Wait 2 seconds after power-on (start logic analyzer, ...)");
@@ -607,8 +605,11 @@ void main_task(void *pvParameter) {
      * Optional for Production: dump less messages
      *  @doc It is possible to lower the log level for specific components (wifi and tcpip_adapter are strong candidates).
      */
-    /////esp_log_level_set("wifi", ESP_LOG_WARN); // @important Disable INFO messages which are too detailed for me.
+    /////esp_log_level_set("nvs", ESP_LOG_WARN); // @important Disable INFO messages which are too detailed for me.
+    /////esp_log_level_set("phy_init", ESP_LOG_WARN); // @important Disable INFO messages which are too detailed for me.
     /////esp_log_level_set("tcpip_adapter", ESP_LOG_WARN); // @important Disable INFO messages which are too detailed for me.
+    /////esp_log_level_set("wifi", ESP_LOG_WARN); // @important Disable INFO messages which are too detailed for me.
+
     /*
      *
      */
@@ -1191,6 +1192,7 @@ void main_task(void *pvParameter) {
      */
     ESP_LOGI(TAG, "\n\n***SECTION: DEEP SLEEP***");
 
+    mjd_log_time();
     mjd_log_memory_statistics();
 
     const uint32_t MY_DEEP_SLEEP_TIME_SEC = 15; // 15 15*60 30*60
@@ -1198,7 +1200,6 @@ void main_task(void *pvParameter) {
 
     // @important Wait a bit so that the ESP_LOGI() can really dump to UART before deep sleep kicks in!
     ESP_LOGI(TAG, "Entering deep sleep (the MCU should wake up %u seconds later)...\n\n", MY_DEEP_SLEEP_TIME_SEC);
-    vTaskDelay(RTOS_DELAY_1SEC);
 
     // DEVTEMP-BEGIN WORKAROUND for ESP-IDF v3.2-dev-607-gb14e87a6 "The system does not wake up properly anymore after the ***2nd*** deep sleep period (and any deep sleep period after that)."
     //     A temporary workaround is to call esp_set_deep_sleep_wake_stub(NULL); before entering deep sleep
@@ -1208,10 +1209,11 @@ void main_task(void *pvParameter) {
 
     esp_deep_sleep_start();
 
-    // DEVTEMP @important I never get to this code line if deep sleep is initiated :P
 
     /********************************************************************************
      * Task Delete
+     *
+     * @important I never get to this code line if deep sleep is initiated :P
      * @doc Passing NULL will end the current task
      *
      */

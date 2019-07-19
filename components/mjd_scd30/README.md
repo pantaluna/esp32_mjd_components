@@ -60,7 +60,7 @@ The pins #5, #6 and #7 are not used.
 - Connect device pin "VDD" to the MCU pin VCC (3.3V).
 - Connect device pin "GND" to the MCU pin GND.
 - Connect device pin "SCL" to the MCU pin SCL. I use GPIO#21 on the HUZZAH32 dev board.
-- Connect device pin "SDA" to the MCU pin SDA. I use GPIO#17 on the HUZZAH32 dev board).
+- Connect device pin "SDA" to the MCU pin SDA. I use GPIO#17 on the HUZZAH32 dev board.
 
 
 
@@ -162,7 +162,7 @@ All calibration commands are supported by the component:
 - Disable the Automatic Self-Calibration (ASC). It is by default disabled.
 - Run a Forced ReCalibration (FRC) in fresh air. This means putting the project board outdoors and probably running the project on batteries; it is in this setup also handy that some output is displayed on the OLED Display. The firmware will first read CO2 measurements continuously until the values have stabilized (typically 3 minutes), and then it will set the FRC value to 400 ppm (the typical ppm value of fresh air on Earth).
 
-The how-to's are described in the documentation of the example project ```esp32_scd30_sensor_settings_using_lib```.
+The instructions are described in the documentation of the example project ```esp32_scd30_sensor_settings_using_lib```.
 
 
 

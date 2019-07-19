@@ -49,6 +49,7 @@ uint8_t mjd_byte_to_bcd(uint8_t val) {
 
 /*
  * Convert binary coded decimal to uint8_t
+ * @doc 4 bits for each decimal digit.
  */
 uint8_t mjd_bcd_to_byte(uint8_t val) {
     return ((val / 16 * 10) + (val % 16));
@@ -255,8 +256,18 @@ esp_err_t mjd_crypto_xor_cipher(const uint8_t param_key, uint8_t* param_ptr_valu
 }
 
 /**********
- * DATE TIME
+ * DATE TIME & DELAYS
+ *
  */
+void mjd_delay_millisec(uint32_t param_millisec) {
+    if (param_millisec > 500) {
+        vTaskDelay(param_millisec / portTICK_PERIOD_MS);
+    }
+    else if (param_millisec > 0) {
+        ets_delay_us(param_millisec * 1000);
+    }
+}
+
 uint32_t mjd_seconds_to_milliseconds(uint32_t seconds) {
     return seconds * 1000;
 }
@@ -284,7 +295,7 @@ void mjd_log_time() {
     if (current_time_string[strlen(current_time_string) - 1] == '\n') {
         current_time_string[strlen(current_time_string) - 1] = '\0';
     }
-    ESP_LOGI(TAG, "*** %s %s", buffer, current_time_string);
+    ESP_LOGI(TAG, "*** DATETIME %s %s", buffer, current_time_string);
 }
 
 void mjd_get_current_time_yyyymmddhhmmss(char *ptr_buffer) {
@@ -449,6 +460,10 @@ esp_err_t mjd_log_memory_statistics() {
 
 /**********
  * ESP32: BOOT INFO, DEEP SLEEP and WAKE UP
+ *
+ * @doc RTC_DATA_ATTR  Forces data into RTC slow memory. See "docs/deep-sleep-stub.rst".
+ *                     Any variable marked with this attribute will keep its value during a deep sleep / wake cycle.
+ *
  */
 static RTC_DATA_ATTR uint32_t mcu_boot_count = 0; //@important Allocated in RTC Fast Memory (= a persistent data area after a deep sleep restart)
 

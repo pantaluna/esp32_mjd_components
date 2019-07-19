@@ -41,7 +41,8 @@ esp_err_t mjd_string_to_mac(const char * param_ptr_input, uint8_t param_ptr_mac[
     if (param_size_mac != LEN_MAC_ARRAY) {
         memset(param_ptr_mac, 0, LEN_MAC_ARRAY);
         f_retval = ESP_ERR_INVALID_ARG;
-        ESP_LOGE(TAG, "%s(). ABORT. param_size_mac invalid length %zu (expected %zu)", __FUNCTION__, param_size_mac, LEN_MAC_ARRAY);
+        ESP_LOGE(TAG, "%s(). ABORT. param_size_mac invalid length %zu (expected %zu)", __FUNCTION__, param_size_mac,
+                LEN_MAC_ARRAY);
         // GOTO
         goto cleanup;
     }
@@ -60,7 +61,7 @@ esp_err_t mjd_string_to_mac(const char * param_ptr_input, uint8_t param_ptr_mac[
     }
 
     ESP_LOGV(TAG, "%s(). () param_ptr_input (HEXDUMP)", __FUNCTION__);
-    ESP_LOG_BUFFER_HEXDUMP(TAG, param_ptr_input,  1 + strlen(param_ptr_input), ESP_LOG_VERBOSE);  // +1 to see the \0
+    ESP_LOG_BUFFER_HEXDUMP(TAG, param_ptr_input, 1 + strlen(param_ptr_input), ESP_LOG_VERBOSE);  // +1 to see the \0
     ESP_LOGV(TAG, "%s(). () param_ptr_mac (HEXDUMP)", __FUNCTION__);
     ESP_LOG_BUFFER_HEXDUMP(TAG, param_ptr_mac, LEN_MAC_ARRAY, ESP_LOG_VERBOSE); // @important Cannot use ARRAY_SIZE(param_ptr_mac)!
 
@@ -80,13 +81,15 @@ esp_err_t mjd_mac_to_string(const uint8_t param_ptr_input_mac[], size_t param_si
 
     if (param_size_mac != LEN_MAC_ARRAY) {
         f_retval = ESP_ERR_INVALID_ARG;
-        ESP_LOGE(TAG, "%s(). ABORT. param_size_mac invalid length %zu (expected %zu)", __FUNCTION__, param_size_mac, LEN_MAC_ARRAY);
+        ESP_LOGE(TAG, "%s(). ABORT. param_size_mac invalid length %zu (expected %zu)", __FUNCTION__, param_size_mac,
+                LEN_MAC_ARRAY);
         // GOTO
         goto cleanup;
     }
 
     size_t len_sprintf = sprintf(param_ptr_output, "%hhX:%hhX:%hhX:%hhX:%hhX:%hhX",
-            param_ptr_input_mac[0], param_ptr_input_mac[1], param_ptr_input_mac[2], param_ptr_input_mac[3], param_ptr_input_mac[4], param_ptr_input_mac[5]);
+            param_ptr_input_mac[0], param_ptr_input_mac[1], param_ptr_input_mac[2], param_ptr_input_mac[3],
+            param_ptr_input_mac[4], param_ptr_input_mac[5]);
     if (len_sprintf != LEN_STRING) {
         f_retval = ESP_ERR_INVALID_ARG;
         ESP_LOGE(TAG, "%s(). ABORT. resulting string length is %zu (expecting %zu)", __FUNCTION__, len_sprintf, LEN_STRING);
@@ -97,14 +100,13 @@ esp_err_t mjd_mac_to_string(const uint8_t param_ptr_input_mac[], size_t param_si
     ESP_LOGV(TAG, "%s(). () param_ptr_input_mac (HEXDUMP)", __FUNCTION__);
     ESP_LOG_BUFFER_HEXDUMP(TAG, param_ptr_input_mac, param_size_mac, ESP_LOG_VERBOSE); // @important Cannot use ARRAY_SIZE(param_ptr_mac)!
     ESP_LOGV(TAG, "%s(). () param_ptr_output (HEXDUMP)", __FUNCTION__);
-    ESP_LOG_BUFFER_HEXDUMP(TAG, param_ptr_output,  1 + strlen(param_ptr_output), ESP_LOG_VERBOSE);  // +1 to see the \0
+    ESP_LOG_BUFFER_HEXDUMP(TAG, param_ptr_output, 1 + strlen(param_ptr_output), ESP_LOG_VERBOSE);  // +1 to see the \0
 
     // LABEL
     cleanup: ;
 
     return f_retval;
 }
-
 
 /**********
  * IP
@@ -238,14 +240,12 @@ esp_err_t mjd_net_is_internet_reachable() {
 
 /**********
  * NTP, Date, Time, RTC
+ *
  */
+#define MJD_NET_SYNCDATETIME_TIMER_GROUP_ID   (TIMER_GROUP_1) // @important Use TIMER_GROUP_1
+#define MJD_NET_SYNCDATETIME_TIMER_ID         (TIMER_1)       // @important Use TIMER_1
+
 esp_err_t mjd_net_sync_current_datetime(bool param_forced) {
-    // @dependency A working Internet connection
-    // @doc The func only syncs the time when it is really necessary (unless param_forced is used).
-    // @doc The time_t variable is an integral value that represents the time as the number of seconds
-    //      from the date called Epoch aka. Unix Epoch (= 00:00 hours, Jan 1, 1970 UTC).
-    // @doc Use localtime_r() to split the time_t variable into the different time values (year, month, day, ...) of a tm struct.
-    // @doc https://www.ibm.com/support/knowledgecenter/en/ssw_ibm_i_72/apis/settod.htm
     ESP_LOGD(TAG, "%s()", __FUNCTION__);
 
     esp_err_t f_retval = ESP_OK;
@@ -255,58 +255,55 @@ esp_err_t mjd_net_sync_current_datetime(bool param_forced) {
     struct tm timeinfo;
     char display_buffer[100];
 
-    // WAIT for the LWIP App SNTP to set the system time
-    // @doc Use an ESP32 Timer to avoid waiting forever for an SNTP response, and hanging up the MCU!
-    // @doc The standard system time of the MCU after power-on is Thu Jan 1 00:00:00 1970
-
-    // MJD_ERR_ESP_SNTP
-
     if (param_forced == true) {
-        ESP_LOGI(TAG, "param_forced true => reset current datetime to epoch");
+        ESP_LOGD(TAG, "%s(). param_forced true => reset current datetime to epoch", __FUNCTION__);
         struct timeval epoch_timeval =
                     { 0 };
         i_retval = settimeofday(&epoch_timeval, NULL);
         if (i_retval != 0) {
-            ESP_LOGE(TAG, "settimeofday() FAILED | err %i", i_retval);
+            ESP_LOGE(TAG, "%s(). settimeofday() FAILED | err %i", __FUNCTION__, i_retval);
         }
     }
 
     time(&now);
     localtime_r(&now, &timeinfo);
 
-    if (timeinfo.tm_year >= (2015 - 1900)) { // The initial datetime of the MCU is +-y1970, check if it is later or not.
-        ESP_LOGI(TAG, "SNTP Sync is NOT NEEDED - timeinfo.tm_year is %d (baseyear is 1900)", timeinfo.tm_year);
-    } else {
-        ESP_LOGI(TAG, "SNTP Sync is REQUIRED - timeinfo.tm_year is %d (baseyear is 1900) or param_forced=true",
+    if (timeinfo.tm_year >= (2018 - 1900)) { // The initial datetime of the MCU is +-y1970, check if it is later or not.
+        ESP_LOGI(TAG, "%s(). SNTP Sync is NOT NEEDED - timeinfo.tm_year is %d (baseyear is 1900)", __FUNCTION__,
                 timeinfo.tm_year);
+    } else {
+        ESP_LOGI(TAG, "%s(). SNTP Sync is REQUIRED - timeinfo.tm_year is %d (baseyear is 1900) or param_forced=true",
+                __FUNCTION__, timeinfo.tm_year);
 
-        // init the lwip App SNTP
+        // *** Init the lwip App SNTP ***
         sntp_setoperatingmode(SNTP_OPMODE_POLL);
         sntp_setservername(0, "pool.ntp.org");
         sntp_init();
 
-        // timer init
-        timer_config_t tconfig = {};
+        // *** timer init
+        timer_config_t tconfig =
+                    { 0 };
         tconfig.divider = esp_clk_apb_freq() / 64000; // Let the timer tick on a slow pace. 1.25 Khz: esp_clk_apb_freq() / 64000 = 1.250 ticks/second
         tconfig.counter_dir = TIMER_COUNT_UP;
         tconfig.counter_en = TIMER_PAUSE;
         tconfig.alarm_en = TIMER_ALARM_DIS;
         tconfig.auto_reload = false;
-        timer_init(TIMER_GROUP_0, TIMER_0, &tconfig);
+        timer_init(MJD_NET_SYNCDATETIME_TIMER_GROUP_ID, MJD_NET_SYNCDATETIME_TIMER_ID, &tconfig);
 
         // timer start with this value (uint64_t).
-        timer_set_counter_value(TIMER_GROUP_0, TIMER_0, 00000000ULL);
-        timer_start(TIMER_GROUP_0, TIMER_0);
+        timer_set_counter_value(MJD_NET_SYNCDATETIME_TIMER_GROUP_ID, MJD_NET_SYNCDATETIME_TIMER_ID, 00000000ULL);
+        timer_start(MJD_NET_SYNCDATETIME_TIMER_GROUP_ID, MJD_NET_SYNCDATETIME_TIMER_ID);
 
-        // LOOP wait for updated datetime XOR timeout from esptimer
+        // LOOP wait for updated datetime XOR timeout from timer
         bool has_timed_out = false;
-        const double SNTP_TIMEOUT_SECONDS = 15.0; // 15.0 @tip Test timeout with value 0.0 (it will fail immediately after the delay).
+        const double SNTP_TIMEOUT_SECONDS = 15.0; // 15.0 @tip Test timeout with value 0.0 (it will fail immediately).
         double timer_counter_value_seconds = 0;
 
-        while (timeinfo.tm_year < (2015 - 1900)) {
-            ESP_LOGD(TAG, "Time not set yet by lwip-SNTP, waiting for response...");
+        while (timeinfo.tm_year < (2018 - 1900)) {
+            ESP_LOGD(TAG, "%s(). Time not set yet by lwip-SNTP, waiting for response...", __FUNCTION__);
 
-            timer_get_counter_time_sec(TIMER_GROUP_0, TIMER_0, &timer_counter_value_seconds);
+            timer_get_counter_time_sec(MJD_NET_SYNCDATETIME_TIMER_GROUP_ID, MJD_NET_SYNCDATETIME_TIMER_ID,
+                    &timer_counter_value_seconds);
             if (timer_counter_value_seconds > SNTP_TIMEOUT_SECONDS) {
                 has_timed_out = true;
                 break; // BREAK WHILE
@@ -319,22 +316,23 @@ esp_err_t mjd_net_sync_current_datetime(bool param_forced) {
         }
 
         if (has_timed_out == false) {
-            ESP_LOGI(TAG, "OK time synced with SNTP");
+            ESP_LOGI(TAG, "%s(). OK time synced with SNTP", __FUNCTION__);
         } else {
-            ESP_LOGE(TAG, "ESP32 Timer timed out (%5f seconds), no response from SNTP, time is not synced with SNTP!",
+            ESP_LOGE(TAG, "%s(). ESP32 Timer timed out (%5f seconds), no response from SNTP, time is not synced with SNTP!",
+                    __FUNCTION__,
                     timer_counter_value_seconds);
             f_retval = MJD_ERR_ESP_SNTP;
         }
 
         // pause timer (stop = n.a.)
-        timer_pause(TIMER_GROUP_0, TIMER_0);
+        timer_pause(MJD_NET_SYNCDATETIME_TIMER_GROUP_ID, MJD_NET_SYNCDATETIME_TIMER_ID);
 
         // stop the lwip App SNTP
         sntp_stop();
     }
 
     // logging UTC
-    ESP_LOGI(TAG, "Actual time (UTC):");
+    ESP_LOGI(TAG, "%s(). Actual time (UTC):", __FUNCTION__);
     ESP_LOGI(TAG, "  - %s", asctime(&timeinfo));
     strftime(display_buffer, sizeof(display_buffer), "day %j of year %Y", &timeinfo);
     ESP_LOGI(TAG, "  - %s", display_buffer);

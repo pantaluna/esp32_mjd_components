@@ -61,7 +61,7 @@ static esp_err_t _log_raw_data(mjd_jsnsr04t_raw_data_t param_raw_data) {
  * @brief Increase error count, reset distance value to 0.0, mark record in error
  */
 static esp_err_t _mark_error_event(mjd_jsnsr04t_config_t* param_ptr_config,
-                                       mjd_jsnsr04t_raw_data_t* param_ptr_raw_data) {
+                                   mjd_jsnsr04t_raw_data_t* param_ptr_raw_data) {
     ESP_LOGD(TAG, "%s()", __FUNCTION__);
 
     esp_err_t f_retval = ESP_OK;

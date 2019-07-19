@@ -1422,21 +1422,6 @@ esp_err_t mjd_ads1115_init(mjd_ads1115_config_t* param_ptr_config) {
             goto cleanup;
         }
         _log_alert_ready_pin_value(param_ptr_config);
-
-        // 3. TIMER
-        timer_config_t tconfig = {};
-        tconfig.divider = 64000; // Let the timer tick on a relative slow pace. 1.25 Khz: esp_clk_apb_freq() / 64000 = 1250 ticks/second
-        tconfig.counter_dir = TIMER_COUNT_UP;
-        tconfig.counter_en = TIMER_PAUSE; // Pause when configured (do not start right now)
-        tconfig.alarm_en = TIMER_ALARM_DIS;
-        tconfig.auto_reload = false;
-        f_retval = timer_init(MJD_ADS1115_TIMER_GROUP_ID, MJD_ADS1115_TIMER_ID, &tconfig);
-        if (f_retval != ESP_OK) {
-            ESP_LOGE(TAG, "%s(). timer_init() | err %d %s", __FUNCTION__, f_retval, esp_err_to_name(f_retval));
-            // GOTO
-            goto cleanup;
-        }
-
     } else {
         ESP_LOGI(TAG, "ADS1115 ALERT READY pin disabled in param_ptr_config");
     }
@@ -1543,6 +1528,19 @@ esp_err_t mjd_ads1115_cmd_get_single_conversion(mjd_ads1115_config_t* param_ptr_
         bool has_timed_out = false;
         const double TIMEOUT_SECONDS = 2; // FAIL when pin is not LOW after 2 seconds
         double timer_counter_value_seconds = 0;
+
+        timer_config_t tconfig = { 0 };
+        tconfig.divider = 64000; // Let the timer tick on a relative slow pace. 1.25 Khz: esp_clk_apb_freq() / uint32_t 64000 = 1250 ticks/second
+        tconfig.counter_dir = TIMER_COUNT_UP;
+        tconfig.counter_en = TIMER_PAUSE; // Pause when configured (do not start right now)
+        tconfig.alarm_en = TIMER_ALARM_DIS;
+        tconfig.auto_reload = false;
+        f_retval = timer_init(MJD_ADS1115_TIMER_GROUP_ID, MJD_ADS1115_TIMER_ID, &tconfig);
+        if (f_retval != ESP_OK) {
+            ESP_LOGE(TAG, "%s(). timer_init() | err %d %s", __FUNCTION__, f_retval, esp_err_to_name(f_retval));
+            // GOTO
+            goto cleanup;
+        }
 
         timer_set_counter_value(MJD_ADS1115_TIMER_GROUP_ID, MJD_ADS1115_TIMER_ID, 00000000ULL);
         timer_start(MJD_ADS1115_TIMER_GROUP_ID, MJD_ADS1115_TIMER_ID);

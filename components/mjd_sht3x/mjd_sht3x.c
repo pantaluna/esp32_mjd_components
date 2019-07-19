@@ -23,7 +23,7 @@ static const char TAG[] = "mjd_sht3x";
  *
  *  @param millisec delay in ms
  *
- *  @important The RTOS func TaskDelay() is not suited; its lowest delay is 10 milliseconds and it does not work with high accuracy for low values.
+ *  @important The RTOS func TaskDelay() is not suited; its lowest delay is 10 milliseconds and it does not work with high accuracy for low values (<250millisec).
  */
 static void _delay_millisec(uint32_t millisec) {
     if (millisec > 0) {

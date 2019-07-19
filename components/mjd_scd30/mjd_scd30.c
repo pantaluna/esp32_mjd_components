@@ -105,12 +105,14 @@ static void _emit_event_configuration_changed() {
  *
  *  @param millisec delay in ms
  *
- *  @important For long delays  (>= 500 millisec)    use vTaskDelay() instead of ets_delay_us() else the CPU Watchdog might be triggered.
- *  @important For small delays (< 500 milliseconds) use ets_delay_us() instead of vTaskDelay(). The RTOS func is not accurate enough.
+ *  @important For small delays (<= 500 millisec) use ets_delay_us(). This is a blocking func.
+ *  @important For long delays  (>  500 millisec) use vTaskDelay(). Also avoidd that the CPU Watchdog is triggered (x seconds).
+ *
+ *  @important RTOS func vTaskDelay() is not accurate; 1. its lowest allowed delay is 10 milliseconds; 2. does not work with high accuracy for values < 500millisec.
  *
  */
 static void _delay_millisec(uint32_t millisec) {
-    if (millisec >= 500) {
+    if (millisec > 500) {
         vTaskDelay(millisec / portTICK_PERIOD_MS);
     }
     else if (millisec > 0) {

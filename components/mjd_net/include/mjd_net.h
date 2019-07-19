@@ -62,6 +62,24 @@ esp_err_t mjd_net_is_internet_reachable();
 /**********
  * NTP, Date, Time, RTC
  */
+
+/**
+ * @brief WAIT for the LWIP App SNTP to set the system time. Use an ESP32 Timer to avoid waiting forever for an SNTP response.
+ *
+ * @dep A working Internet connection.
+ *
+ * @doc The func only syncs the time when it is really necessary (unless param_forced is used).
+ *
+ * @doc The system time of the MCU after power-on is Thu Jan 1 00:00:00 1970
+ *
+ * @doc The time_t variable is an integral value that represents the time as the number of seconds
+ *      from the date called Epoch aka. Unix Epoch (= 00:00 hours, Jan 1, 1970 UTC).
+ *
+ * @doc Use localtime_r() to split the time_t variable into the different time values (year, month, day, ...) of a tm struct.
+ *
+ * @doc https://www.ibm.com/support/knowledgecenter/en/ssw_ibm_i_72/apis/settod.htm
+ *
+ */
 esp_err_t mjd_net_sync_current_datetime(bool param_forced);
 
 /**********

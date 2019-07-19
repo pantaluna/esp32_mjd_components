@@ -25,8 +25,8 @@ extern "C" {
 /**
  * TIMER SETTINGS
  */
-#define MJD_MLX90393_TIMER_GROUP_ID   (TIMER_GROUP_0)
-#define MJD_MLX90393_TIMER_ID     (TIMER_0)
+#define MJD_MLX90393_TIMER_GROUP_ID   (TIMER_GROUP_1)
+#define MJD_MLX90393_TIMER_ID         (TIMER_0)
 
 /**
  * My default MLX device settings - see mjd_mlx90393_init() - recommended settings from the DATA SHEET.
