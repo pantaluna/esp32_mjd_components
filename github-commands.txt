@@ -44,7 +44,7 @@ git commit -m "Updated"
 git config credential.helper store
 git push --set-upstream origin master
 
-git tag --annotate v1.11 --message "Update component mjd_ds3231 RTC and external 32Khz crystal oscillator for ESP32"
+git tag --annotate v1.11 --message "Update component mjd_ds3231 : RTC and external 32Khz crystal oscillator for ESP32"
 git push origin --tags
 
 git describe --tags --dirt
