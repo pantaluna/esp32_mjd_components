@@ -46,8 +46,9 @@ esp_err_t mjd_hcsr501_init(mjd_hcsr501_config_t* param_ptr_config) {
         goto cleanup;
     }
 
-    // WAIT 5 seconds so the PIR Sensor can calibrate itself!
-    // TODO Production: increase it to 60 seconds
+    // WAIT 5 seconds after power-on so the PIR Sensor can calibrate itself!
+    //      @important     + Keep the area clear of human movement.
+    //      @important      + False positives might occur during calibration.
     vTaskDelay(RTOS_DELAY_5SEC);
 
     // Semaphore

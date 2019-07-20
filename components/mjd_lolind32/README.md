@@ -1,11 +1,11 @@
 # ESP-IDF MJD LOLIN D32 component
-This component "mjd_lolind32" has been developed to expose specific functionality for the WEMOS LOLIN D32 development board (ESP32). This component is developed for the ESP-IDF V3 framework for the ESP32 hardware from Espressif.
+This component "mjd_lolind32" has been developed to expose specific functionality for the WEMOS LOLIN D32 development board (ESP32). This component is developed for the ESP-IDF framework for the ESP32 hardware from Espressif.
 
 The features of this component:
 
 * To obtain with a simple function call the actual battery voltage of the Lion battery that is hooked up to the JST-PH2 connector.
 * To verify what method will be used by the ESP-IDF ADC component in relation to the calibration of the ADC. The ADC peripheral of the ESP32 is used for example to read the battery voltage.
-* To verify the actual VREF Voltage Reference of the ESP32. This can be done by routing the actual voltage reference value to an analog GPIO using the ADC1 or the ADC2 peripheral. And then use a multimeter to verify the VREF voltage. The value will be around 1100mV.
+* To verify the actual VREF Voltage Reference of the ESP32. This can be done by routing the actual voltage reference value to an analog GPIO# using the ADC1 or the ADC2 peripheral. And then use a multimeter to verify the VREF voltage. The value will be around 1100mV.
 
 
 

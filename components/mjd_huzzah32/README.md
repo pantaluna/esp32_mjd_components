@@ -1,5 +1,5 @@
 # ESP-IDF MJD Adafruit HUZZAH32 component
-This component "mjd_huzzah32" has been developed to expose specific functionality for the Adafruit HUZZAH32 development board (ESP32). This component is developed for the ESP-IDF V3 framework for the ESP32 hardware from Espressif.
+This component "mjd_huzzah32" has been developed to expose specific functionality for the Adafruit HUZZAH32 development board (ESP32). This component is developed for the ESP-IDF framework for the ESP32 hardware from Espressif.
 
 The features of this component:
 

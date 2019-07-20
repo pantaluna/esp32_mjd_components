@@ -1,20 +1,20 @@
 # ESP-IDF MJD HC-SR501 PIR motion sensor component
 This is the component "mjd_hcsr501" for the ESP-IDF software framework for the ESP32 hardware from Espressif.
 
+The software component "mjd_hcsr501" was originally developed for the HC-SR501 PIR motion sensor module hence its name. The data protocol of all modules are the same.
+
 The component supports the following PIR motion sensor models:
 
 - **HC-SR501 PIR motion sensor module** with lens. This module is fully configurable without having to solder/unsolder tiny SMD resistors. This was the original product that became very popular.
 - **MH-SR602 Micro PIR motion sensor module** with lens (even smaller). The pin order is different (the pins on the PCB are labeled). This is currently the most popular PIR sensor and the data protocol is compatible with the HC-SR501. **Quiescent current: 20uA.**
-- **AM312 Mini PIR motion sensor module** with lens (smaller). This module is very sensitive to noise and **not recommended** for new projects.
+- **AM312 Mini PIR motion sensor module** with lens (smaller). The pin order is different (the pins on the PCB are labeled). This module is very sensitive to noise and **not recommended** for new projects.
 
 
 
-The software component "mjd_hcsr501" was originally developed for the HC-SR501 PIR motion sensor module hence its name. The data protocol of all modules are the same.
+## Example ESP-IDF project(s)
+`esp32_hcsr501_pir_sensor_using_lib` This project demonstrates the basics of using the MJD component "mjd_hcsr501".
 
-
-
-## Example ESP-IDF project
-`my_hcsr501_pir_sensor_using_lib` This project demonstrates the basics of using the MJD component "mjd_hcsr501". The component supports various PIR motion sensor models:
+`esp32_hcsr501_pir_sensor_deep_sleep_udp_using_lib` This project uses a PIR sensor to detect human movement in a room. The app wakes up when a movement has been detected and uploads a movement-detected message to a UDP Server. The app remains in deep sleep most of the time to minimize the power consumption. 
 
 
 
@@ -36,20 +36,22 @@ DATA
 
 ### Sensor wiring up
 
+Check the wiring scheme in the /_doc/ directory.
+
 ```
 DEVICE PIN  MCU PIN
 ==========  =======
 GND         GND
 VCC         VCC 3.3V
-DATA        GPIO#14 (Huzzah32 #14 bottomright-2)
+DATA        GPIO#27 (Huzzah32 #27 bottomright-6)
 ```
 
 - Bypass capacitor: connect a 100nF XR7 ceramic capacitor between the sensor pins VCC and GND; as close as possible to the sensor. Check the wiring scheme in the /_doc/ directory.
-- CFB Low Pass Filter: connect a 100nF XR7 ceramic capacitor between the DATA pin of the sensor and GND. Connect a ferrite bead on the wire to the DATA pin of the sensor. Check the wiring scheme in the /_doc/ directory.
+- CFB Low Pass Filter: connect a 100nF XR7 ceramic capacitor between the DATA pin of the sensor and GND. Connect a ferrite bead on the wire to the DATA pin of the sensor. 
 
 
 
-@important A 10K pullup resistor for the DATA pin is not needed because the mjd_hcsr501 software component enables the ESP32's internal pullup resistor for that pin.
+A 10K pullup resistor for the DATA pin is not needed because the mjd_hcsr501 software component enables the ESP32's internal pullup resistor for that pin.
 
 
 
@@ -64,7 +66,7 @@ DATA        GPIO#14 (Huzzah32 #14 bottomright-2)
 
 
 
-## Data Pin Logic (no protocol)
+## Data Pin Logic (no real protocol)
 - DATA Pin logic: High 3.3V, Low 0V.
 - The pin is HIGH (3.3V) when movement is detected (and stays so for X seconds during the time decay period). The time decay period is typically 2.5 seconds.
 - The pin is LOW (0V) when no movement is detected.
@@ -75,7 +77,7 @@ DATA        GPIO#14 (Huzzah32 #14 bottomright-2)
 
 - Sensing angle: 110 degrees.
 - Sensing distance: 0.3 - 5 meter.
-- Some models can be extended with a photoresistor so that the module is only active when it is dark.
+- Some models can be extended with **a LDR photoresistor model 5528 (bright=8-20 KiloOhm, dark=1 MegaOhm)** so that the module is only enabled when it is dark.
 - The sensor is designed to adjust to slowly changing conditions that would happen normally as the day progresses and the environmental conditions change.
 - The module contains the BISS0001 PIR motion detector IC. It processes the output of the analog sensor and transforms it in a digital signal.
 - The HC-SR501 module contains the Holtek HT7133-1 regulator IC. It regulates the voltage 5V down to 3.3V.

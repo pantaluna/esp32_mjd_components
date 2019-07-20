@@ -461,8 +461,8 @@ esp_err_t mjd_log_memory_statistics() {
 /**********
  * ESP32: BOOT INFO, DEEP SLEEP and WAKE UP
  *
- * @doc RTC_DATA_ATTR  Forces data into RTC slow memory. See "docs/deep-sleep-stub.rst".
- *                     Any variable marked with this attribute will keep its value during a deep sleep / wake cycle.
+ * @doc RTC_DATA_ATTR Forces data into RTC slow memory. See "docs/deep-sleep-stub.rst".
+ *                    Any variable marked with this attribute will keep its value after a deep sleep / wakeup cycle.
  *
  */
 static RTC_DATA_ATTR uint32_t mcu_boot_count = 0; //@important Allocated in RTC Fast Memory (= a persistent data area after a deep sleep restart)

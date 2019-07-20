@@ -176,6 +176,14 @@ uint32_t mjd_seconds_to_microseconds(uint32_t seconds);
 void mjd_log_time();
 void mjd_set_timezone_utc();
 void mjd_set_timezone_amsterdam();
+
+/*
+ * @brief
+ *
+ * @example char current_time[20];
+ *          mjd_get_current_time_yyyymmddhhmmss(current_time);
+ *
+ */
 void mjd_get_current_time_yyyymmddhhmmss(char *ptr_buffer);
 
 /**********
