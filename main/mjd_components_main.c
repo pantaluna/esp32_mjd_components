@@ -69,6 +69,16 @@ void main_task(void *pvParameter) {
     int total;
     esp_err_t f_retval;
 
+    /*
+     * Optional for Production: dump less messages
+     *  @doc It is possible to lower the log level for specific components (wifi and tcpip_adapter are strong candidates).
+     */
+    /////esp_log_level_set("nvs", ESP_LOG_WARN); // @important Disable INFO messages which are too detailed for me.
+    /////esp_log_level_set("phy_init", ESP_LOG_WARN); // @important Disable INFO messages which are too detailed for me.
+    /////esp_log_level_set("RTC_MODULE", ESP_LOG_WARN); // @important Disable INFO messages which are too detailed for me.
+    /////esp_log_level_set("tcpip_adapter", ESP_LOG_WARN); // @important Disable INFO messages which are too detailed for me.
+    /////esp_log_level_set("wifi", ESP_LOG_WARN); // @important Disable INFO messages which are too detailed for me.
+
     /********************************************************************************
      * SOC init
      *
@@ -555,6 +565,41 @@ void main_task(void *pvParameter) {
     }
 
     /********************************************************************************
+     * ESP32 actual datetime
+     */
+    ESP_LOGI(TAG, "\n\n***SECTION: ESP32 actual datetime***");
+
+    ESP_LOGI(TAG, "- mjd_log_time()");
+    mjd_log_time();
+
+    ESP_LOGI(TAG, "- void mjd_get_current_time_yyyymmddhhmmss(char *ptr_buffer)");
+    char current_time[14 + 1];
+    mjd_get_current_time_yyyymmddhhmmss(current_time);
+    ESP_LOGI(TAG, "  %s", current_time);
+
+
+    // DEVTEMP: HALT
+    /////mjd_rtos_wait_forever();
+
+    /********************************************************************************
+     * ESP32 timestamps - RTOS ticks - CPU ticks
+     */
+    ESP_LOGI(TAG, "\n\n***SECTION: ESP32 ticks and cpu cycles***");
+
+    mjd_log_memory_statistics();
+
+    ESP_LOGI(TAG, "  @doc #define portTICK_PERIOD_MS ((TickType_t) 1000 / configTICK_RATE_HZ )");
+    for (i = 0; i < 5; ++i) {
+        printf(
+                "esp_log_timestamp(): %u millisec | xTaskGetTickCount() * portTICK_PERIOD_MS: %u millisec | xTaskGetTickCount(): %u | xthal_get_ccount(): %u \n",
+                esp_log_timestamp(), xTaskGetTickCount() * portTICK_PERIOD_MS, xTaskGetTickCount(), xthal_get_ccount());
+        vTaskDelay(RTOS_DELAY_1SEC);
+    }
+
+    // DEVTEMP: HALT
+    /////mjd_rtos_wait_forever();
+
+    /********************************************************************************
      * RTOS
      *
      */
@@ -600,15 +645,6 @@ void main_task(void *pvParameter) {
      *
      */
     ESP_LOGI(TAG, "\n\n***SECTION: ESP32 Logging***");
-
-    /*
-     * Optional for Production: dump less messages
-     *  @doc It is possible to lower the log level for specific components (wifi and tcpip_adapter are strong candidates).
-     */
-    /////esp_log_level_set("nvs", ESP_LOG_WARN); // @important Disable INFO messages which are too detailed for me.
-    /////esp_log_level_set("phy_init", ESP_LOG_WARN); // @important Disable INFO messages which are too detailed for me.
-    /////esp_log_level_set("tcpip_adapter", ESP_LOG_WARN); // @important Disable INFO messages which are too detailed for me.
-    /////esp_log_level_set("wifi", ESP_LOG_WARN); // @important Disable INFO messages which are too detailed for me.
 
     /*
      *
@@ -702,24 +738,6 @@ void main_task(void *pvParameter) {
 
     ESP_LOGI(TAG, "\nESP_LOG_BUFFER_CHAR(): ascii_data");
     ESP_LOG_BUFFER_CHAR(TAG, ascii_data, ARRAY_SIZE(ascii_data));
-
-    // DEVTEMP: HALT
-    /////mjd_rtos_wait_forever();
-
-    /********************************************************************************
-     * ESP32 timestamps - RTOS ticks - CPU ticks
-     */
-    ESP_LOGI(TAG, "\n\n***SECTION: ESP32 ticks and cpu cycles***");
-
-    mjd_log_memory_statistics();
-
-    ESP_LOGI(TAG, "  @doc #define portTICK_PERIOD_MS ((TickType_t) 1000 / configTICK_RATE_HZ )");
-    for (i = 0; i < 5; ++i) {
-        printf(
-                "esp_log_timestamp(): %u millisec | xTaskGetTickCount() * portTICK_PERIOD_MS: %u millisec | xTaskGetTickCount(): %u | xthal_get_ccount(): %u \n",
-                esp_log_timestamp(), xTaskGetTickCount() * portTICK_PERIOD_MS, xTaskGetTickCount(), xthal_get_ccount());
-        vTaskDelay(RTOS_DELAY_1SEC);
-    }
 
     // DEVTEMP: HALT
     /////mjd_rtos_wait_forever();
@@ -1234,14 +1252,10 @@ void app_main() {
      */
     BaseType_t xReturned;
     xReturned = xTaskCreatePinnedToCore(&main_task, "main_task (name)", MYAPP_RTOS_TASK_STACK_SIZE_16K, NULL,
-    MYAPP_RTOS_TASK_PRIORITY_NORMAL, NULL,
-    APP_CPU_NUM);
+    MYAPP_RTOS_TASK_PRIORITY_NORMAL, NULL, APP_CPU_NUM);
     if (xReturned == pdPASS) {
         ESP_LOGI(TAG, "OK Task has been created, and is running right now");
     }
 
-    /**********
-     * END
-     */
     ESP_LOGI(TAG, "END %s()", __FUNCTION__);
 }

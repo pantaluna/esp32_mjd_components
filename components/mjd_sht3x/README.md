@@ -35,7 +35,7 @@ Go to the examples and learn how the component is used.
 
 - Adafruit Sensirion SHT31-D - Temperature & Humidity Sensor.
 - SHT31 Temperature & Humidity Sensor Module Breakout Weather (various vendors).
-- Sensirion SHT85 Humidity & Temperature Sensor ±1.5% RH ±0.1°C I2C (high quality mini-board made by Sensirion).
+- Sensirion SHT85 Humidity & Temperature Sensor ±1.5% RH ±0.1°C I2C (a high quality mini-board made by Sensirion).
 
 
 
@@ -62,15 +62,15 @@ The breakout boards mentioned above contain a **10K pulldown resistor** for this
 ```
 PIN#      PIN NAME	 Description
 --------  ---------- -----------
- Left 1   VIN        Power supply (3.3V for the ESP32)
- Left 2   GND        Ground
- Left 3   SCL        I2C Serial Clock
- Left 4   SAA/SDA    I2C Serial Data
- Right 1  AL         Alert pin
- Right 2  AD         I2C Address pin
+Left 1    VIN        Power supply (3.3V for the ESP32)
+Left 2    GND        Ground
+Left 3    SCL        I2C Serial Clock
+Left 4    SAA/SDA    I2C Serial Data
+Right 1   AL         Alert pin
+Right 2   AD         I2C Address pin
 ```
 
-@important Wiring up the pins AL and AD is optional.
+Note: wiring up the pins AL and AD is optional.
 
 
 
@@ -103,7 +103,7 @@ PIN#      PIN NAME	 Description
 
 - It is important to have stable I2C connections.
 - Use **good quality breadboards**. Many have bad contacts, especially the ones that have been used for a month in the lab.
-- Use **short, good quality Dupont cables**. In my experience a stock Dupont cable of 30cm is too long when using these modules on a breadboards (especially for the SCL and SDA connections). A 5cm Dupont cable always works.
+- Use **short, good quality Dupont cables**. In my experience a stock Dupont cable of 30cm is too long when using these modules on a breadboard (especially for the SCL and SDA connections). A 5cm Dupont cable always works.
 - It is better to solder everything together on **a PCB** as soon as possible and use quality AWG22 wires and connectors.
 - Guidelines "Topic: I2C flakiness:  best strategy to identify and fix?" https://forum.arduino.cc/index.php?topic=509323.0
 
@@ -128,10 +128,10 @@ PIN#      PIN NAME	 Description
   - Relative Humidity %.
   - Dew Point in degrees Celsius and Fahrenheit (<https://en.wikipedia.org/wiki/Dew_point>). It is a complicated formula so it is handy that the component calculates that for you :)
 - The default for the **SHT3x Repeatability** setting in the component is **High**. The property influences the measurement duration, noise levels and the overall energy consumption of the sensor. The measurement duration for each measurement is: High=15 ms, Medium=6 ms, Low=4 ms.
-- The component implements the **Single Shot Modes**. Note that you can also read measurements in this mode at relatively high speed (6 - 25Hz depending on the Repeatability setting).
-- The device's **Single Shot Modes with I2C Clock Stretch enabled** are not implemented in the component because I2C Clock Stretching is not supported properly in the ESP32 I2C Driver / Hardware.
+- The component implements the **Single Shot Mode**. Note that you can also read measurements in this mode at relatively high speed (6 - 25Hz depending on the Repeatability setting).
+- The device's **Single Shot Mode with I2C Clock Stretch enabled** is not implemented in the component because I2C Clock Stretching is not supported properly in the ESP32 I2C Driver / Hardware.
 - The component can be used to **read/write all documented properties in the device** registers. Check the source ```mjd_sht3x_defs.h``` for more information.
-- The **Periodic Data Acquisition Modes** are not implemented in this component. This component was made for typical IoT Sensor Nodes where that feature is not required (and not desired due to its high power consumption). You can still implement periodic measurements in your project by executing periodic Single Shot Mode measurements at relatively high speed (6 - 25Hz depending on the Repeatability setting).
+- The **Periodic Data Acquisition Modes** are not implemented in this component. This component was made for typical IoT sensor nodes where that feature is not required; and not desired because of its high power consumption. You can still implement periodic measurements in your project by executing periodic Single Shot Mode measurements at relatively high speed (6 - 25Hz depending on the Repeatability setting).
 - The use of **the ALERT pin** is not implemented. It is typically used in a hardware setup without a microcontroller.
 
 

@@ -2,7 +2,7 @@
 
 This is a component for the ESP-IDF software framework of the ESP32 hardware from Espressif.
 
-This component is developed for **the popular OLED 128x32 and OLED 128x64 displays which are based on the SSD1306 OLED Driver IC**. The **data protocol is I2C** (not SPI).
+This component is developed for **the popular OLED 128x32 and OLED 128x64 display modules which are based on the SSD1306 OLED Driver IC**. The **data protocol is I2C** (opposed to SPI).
 
 **The main purpose is to make it easy to display short debug text messages and status text information on the OLED screen.**
 
@@ -121,10 +121,10 @@ None.
 
 @note This procedure has already been executed.
 
-- ```EDP-IDF component u8g2: v2.25.10 of 2019-02-09``` <https://github.com/olikraus/u8g2>
+- ```EDP-IDF component "u8g2": v2.25.10 of 2019-02-09``` <https://github.com/olikraus/u8g2>
   - Download that release from GitHub into your project's components directory.
   - Remove all subdirectories except ```./csrc/``` to save precious space. The total space used goes down from 210MB to 20MB. The ```./csrc/``` subdirectory contains the C Language sources of the project.
-  - The repo already contains an ```component.mk``` file so that the ESP-IDF Framework recognizes it as a valid ESP-IDF component :) 
+  - The repo already contains an ```component.mk``` file so that the ESP-IDF Framework recognizes it as a valid ESP-IDF component :)
   - This library is hardware agnostic so it is still required to write a HAL for the ESP32 platform. This is where the source code from ```nkolban``` comes in.
 
 
@@ -136,7 +136,7 @@ None.
 - Nkolban's HAL for the U8G2 library for monochrome OLED screens
   - Download the ```v3.0 branch``` of the repo https://github.com/nkolban/esp32-snippets
   - Extract the files ```u8g2_esp32_hal.h``` and ```u8g2_esp32_hal.c``` from the directory ```./master/hardware/displays/U8G2``` into this ```mjd_ssd1306``` component.
-  - I have modified the HAL so that it is possible to specify in the configuration which ESP32's I2C Master bus to use (```I2C_NUM_0``` or ```I2C_NUM_1```). The default is ```I2C_NUM_0```. This feature is handy when using multiple I2C slave devices in a project.
+  - I have modified the HAL so that it is possible to specify in the configuration which ESP32's I2C Master bus to use (```I2C_NUM_0``` or ```I2C_NUM_1```). The default is ```I2C_NUM_0```. This feature is handy when using multiple I2C buses in a project.
   - I have modified the HAL so that it is possible to specify in the configuration if the component should initialize the I2C Master Bus, or not. The default is ```Yes```. This feature becomes handy when using multiple I2C slave devices in a project.
 
 

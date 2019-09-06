@@ -34,7 +34,7 @@ float mjd_lolind32_get_battery_voltage() {
     float battery_voltage_float = 0;
 
     // FUNC
-    const uint32_t adc_voltage_reference = 1100; // @unit millivolt. Reference Voltage = +-1100mV. This value is not used for measuring the battery voltage because the LOLIN D32 has eFuse "VREF Voltage Reference" BLOCK0.
+    const uint32_t adc_voltage_reference = 1100; // @unit millivolt. Reference Voltage = +-1100mV. This value is not used for measuring the battery voltage because the LOLIN D32's eFuse "VREF Voltage Reference" BLOCK0 is set.
     const adc_bits_width_t adc_width = ADC_WIDTH_BIT_10;    // BIT_10=0..1023
     const adc1_channel_t adc_channel = ADC1_GPIO35_CHANNEL; // ADC1_GPIO35_CHANNEL ADC1_CHANNEL_7_GPIO_NUM
     const adc_atten_t adc_atten = ADC_ATTEN_DB_11;
@@ -52,7 +52,6 @@ float mjd_lolind32_get_battery_voltage() {
     //   1. ADC read 64 samples (an attempt to reduce noise).
     //   2. Deduct actual battery voltage from the ADC reading.
     //   3. Double the mV value per the circuit design for getting the battery voltage (2x 100K voltage divider on PCB)
-    //   4. If the Voltage Regulator is disabled Then apply a correction factor.
     uint32_t voltage_mv = 0;
     uint32_t one_voltage_read = 0;
     const uint32_t NBR_OF_SAMPLES = 64;

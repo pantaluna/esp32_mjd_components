@@ -44,7 +44,7 @@ git commit -m "Updated"
 git config credential.helper store
 git push --set-upstream origin master
 
-git tag --annotate v1.11 --message "Update component mjd_hcsr501: Support PIR sensors HC-SR501, MH-SR602 and AM312."
+git tag --annotate v1.13 --message "Update component mjd_ads1115 and mjd_tmp36. More documentation in general."
 git push origin --tags
 
 git describe --tags --dirt

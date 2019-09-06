@@ -3,10 +3,10 @@ menu "MY PROJECT configuration"
 ##
 ## LED On-devboard
 choice MY_LED_ON_DEVBOARD_GPIO_NUM
-    prompt "LED on-devboard: GPIO#"
-    default MY_LED_ON_DEVBOARD_GPIO_NUM_HUZZAH32_13
+    prompt "On-devboard LED GPIO#"
+    default MY_LED_ON_DEVBOARD_GPIO_NUM_LOLIND32_5
     help
-        The LED on-devboard GPIO# to be used.
+        The on-devboard LED GPIO# to be used.
 config MY_LED_ON_DEVBOARD_GPIO_NUM_HUZZAH32_13
     bool "HUZZAH32 GPIO#13"
 config MY_LED_ON_DEVBOARD_GPIO_NUM_LOLIN32LITE_22
@@ -17,7 +17,7 @@ config MY_LED_ON_DEVBOARD_GPIO_NUM_OTHER
     bool "Other GPIO#"
 endchoice
 config MY_LED_ON_DEVBOARD_GPIO_NUM_OTHER_VAL
-    int "Other LED on-devboard: GPIO#" if MY_LED_ON_DEVBOARD_GPIO_NUM_OTHER
+    int "Other on-devboard LED GPIO#" if MY_LED_ON_DEVBOARD_GPIO_NUM_OTHER
     default 99
 config MY_LED_ON_DEVBOARD_GPIO_NUM
     int
@@ -27,8 +27,8 @@ config MY_LED_ON_DEVBOARD_GPIO_NUM
     default MY_LED_ON_DEVBOARD_GPIO_NUM_OTHER_VAL if MY_LED_ON_DEVBOARD_GPIO_NUM_OTHER
 
 choice MY_LED_ON_DEVBOARD_WIRING_TYPE
-    prompt "LED on-devboard: wiring type"
-    default MY_LED_ON_DEVBOARD_WIRING_TYPE_LED_LOW_SIDE
+    prompt "LED on-board wiring type"
+    default MY_LED_ON_DEVBOARD_WIRING_TYPE_LED_HIGH_SIDE
     help
         The LED on-board wiring type to be used.
 config MY_LED_ON_DEVBOARD_WIRING_TYPE_LED_LOW_SIDE

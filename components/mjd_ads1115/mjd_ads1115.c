@@ -1304,7 +1304,7 @@ esp_err_t mjd_ads1115_init(mjd_ads1115_config_t* param_ptr_config) {
     /*
      * I2C
      *
-     * @important The ADS1115 breakout board already contains a 10K pullup for the SCL & SDA pins. So the MCU's internal pullups for these pins can be disabled.
+     * @important The ADS1115 breakout board contains a 10K pullup for the SCL & SDA pins. So the MCU's internal pullups for these pins can be disabled.
      */
     if (param_ptr_config->manage_i2c_driver == true) {
         // Config
@@ -1380,8 +1380,9 @@ esp_err_t mjd_ads1115_init(mjd_ads1115_config_t* param_ptr_config) {
 
     /*
      * ALERT READY pin: REGISTERS & GPIO & TIMER
-     *   @rule -1 means not used to detect that a measurement is ready to be read.
      *   @doc IN single-shot mode, the ALERT/RDY pin asserts LOW at the end of a conversion by default.
+     *   @doc These ADS1115 breakout boards contain a 10K pullup resistor for the ALERT/READY pin so the internal pullup can be disabled (some ESP32 GPIO#'s have no internal pullup pulldown functionality!).
+     *   @rule -1 means not used to detect that a measurement is ready to be read.
      */
     if (param_ptr_config->alert_ready_gpio_num != -1) {
         // 1. ADS1115 register setting to enable the ALERT READY Pin (3 settings!)
@@ -1412,7 +1413,7 @@ esp_err_t mjd_ads1115_init(mjd_ads1115_config_t* param_ptr_config) {
             { 0 };
         io_conf.pin_bit_mask = (1ULL << param_ptr_config->alert_ready_gpio_num);
         io_conf.mode = GPIO_MODE_INPUT;
-        io_conf.pull_up_en = GPIO_PULLUP_ENABLE;  // @important When configured as a conversion ready pin, ALERT/RDY requires a pullup resistor.
+        io_conf.pull_up_en = GPIO_PULLUP_DISABLE;  // @important When configured as a conversion ready pin, ALERT/RDY requires a pullup resistor.
         io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
         io_conf.intr_type = GPIO_INTR_DISABLE;
         f_retval = gpio_config(&io_conf);

@@ -1,7 +1,7 @@
 # ESP-IDF MJD LoraBee LoRa Board (Microchip RN2843)
 This is a component for the ESP-IDF software framework of the ESP32 hardware from Espressif.
 
-This component is developed for the SODAQ LoraBee Microchip RN2483A board in combination with an ESP32 development board (contains a Microchip RN2843 LoRa chip).
+This component is developed for the SODAQ LoraBee Microchip RN2483A board in combination with an ESP32 development board (contains an FCC Certified Microchip RN2843 LoRa chip).
 
 The ESP-IDF component implements all configuration options of the LoraBee board.
 
@@ -15,7 +15,7 @@ The LoraWAN protocol will be implemented in a later version. It will be relative
 
 ## Example ESP-IDF project(s)
 - `my_lorabee_using_lib` This project demonstrates how to issue basic commands to the LoraBee module using the ESP32.
-- `my_lorabee_using_pc_usbuart` This project demonstrates how to issue basic commands to the LoraBee module using a Windows PC and a USB-UART board (such as an FTDI). This is the recommended setup to get familiar with the features of the LoraBee / Microchip RN2843A board.
+- `my_lorabee_using_pc_usbuart` This project demonstrates how to issue basic commands to the LoraBee module using a Windows/Linux PC/Server and a USB-UART board (such as an FTDI). This is the recommended setup to get familiar with the features of the LoraBee / Microchip RN2843A board.
 - `my_lorabee_tx_using_lib` (Lora Transmit) Use this project to configure a station to send data conform the LoRa protocol using the ESP32. The LoRa settings match those of the other project `my_lorabee_rx_using_lib`.
 - `my_lorabee_rx_using_lib` (Lora Receive). Use this project to configure another station to receive data conform the LoRa protocol using the ESP32. The LoRa settings match those of the other project `my_lorabee_tx_using_lib`.
 
@@ -30,13 +30,13 @@ The LoraWAN protocol will be implemented in a later version. It will be relative
 ## LoraBee board + Parallax XBee Adapter Board
 [Goto the _doc folder for photo's and documents.]
 
-The SODAQ LoraBee board is basically an XBee breakout board that contains a Microchip RN2843A Lora module (note the subversion "A"). The Microchip RN2483A module contains a Semtech SX1276 Lora transceiver chip. As far as I am aware the LoRaBee only uses the pins VCC, GND, RX & TX of the Microchip RN2483A module.
+The SODAQ LoraBee board is basically an XBee breakout board that contains a Microchip RN2843A Lora module (note the subversion "A"). The Microchip RN2483A module contains a Semtech SX1276 Lora transceiver chip. As far as I am aware the LoraBee only exposes the pins VCC, GND, RX & TX of the Microchip RN2483A module.
 
 The antenna connector type of the LoraBee is SMA male (inner pin). The supplied 868Mhz antenna connector type is SMA female (inner pin).
 
 Unfortunately the 2mm pin spacing of the LoraBee XBee board is not compatible with the 2.54mm (0.1") pin spacing of a standard breadboard.
 
-We have to use the Parallax XBee Adapter Board 32403 which breaks out the Xbee pins to breadboard-compatible pins.
+We have to use the Parallax XBee Adapter Board 32403 which breaks out the XBee pins to breadboard-compatible pins.
 
 
 
@@ -46,7 +46,7 @@ We have to use the Parallax XBee Adapter Board 32403 which breaks out the Xbee p
 ### SODAQ LoraBee board
 Solder join the 2 pads of the SJ1 solder bridge at the backplate of the LoraBee board. This way you can hard reset the board (via the microcontroller) when driving for example the GPIO#17 high.
 
-By default the board does no reset at all. The RN2843A's Reset Pin is wired via the solder bridge SJ1 to the Parallax XBee breakout pin "IO3" (it is the 4th pin on the RIGHT side of the Parallax board). The solder bridge SJ1 is open by default to safeguard your keys when you reset your microcontroller, so you can continue transmitting. But you can close the solder bridge SJ1 if you want the LoraBee to reset whenever you want; connect the LoRaBee RESET pin#17 to the Parallax XBee pin "IO3" to the MCU pin GPIO#14.
+By default the board does no reset at all. The RN2843A's Reset Pin is wired via the solder bridge SJ1 to the Parallax XBee breakout pin "IO3" (it is the 4th pin on the RIGHT side of the Parallax board). The solder bridge SJ1 is open by default to safeguard your keys when you reset your microcontroller, so you can continue transmitting. But you can close the solder bridge SJ1 if you want the LoraBee to reset whenever you want; connect the LoraBee RESET pin#17 to the Parallax XBee pin "IO3" to the MCU pin GPIO#14.
 
 ### Parallax XBee Pro Adapter Board
 - Pitch 2.0mm (not 2.54mm or 1.27mm).

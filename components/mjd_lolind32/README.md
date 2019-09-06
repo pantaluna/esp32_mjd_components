@@ -1,11 +1,11 @@
 # ESP-IDF MJD LOLIN D32 component
-This component "mjd_lolind32" has been developed to expose specific functionality for the WEMOS LOLIN D32 development board (ESP32). This component is developed for the ESP-IDF framework for the ESP32 hardware from Espressif.
+This ESP-IDF component "mjd_lolind32" has been developed to expose specific functionality for the WEMOS LOLIN D32 development board (ESP32). This component is developed for the ESP-IDF framework for the ESP32 hardware from Espressif.
 
 The features of this component:
 
 * To obtain with a simple function call the actual battery voltage of the Lion battery that is hooked up to the JST-PH2 connector.
 * To verify what method will be used by the ESP-IDF ADC component in relation to the calibration of the ADC. The ADC peripheral of the ESP32 is used for example to read the battery voltage.
-* To verify the actual VREF Voltage Reference of the ESP32. This can be done by routing the actual voltage reference value to an analog GPIO# using the ADC1 or the ADC2 peripheral. And then use a multimeter to verify the VREF voltage. The value will be around 1100mV.
+* To verify the actual VREF Voltage Reference of the ESP32. This can be done by routing the actual voltage reference value to an analog GPIO# using the ADC1 or ADC2 peripheral. And then use a multimeter to verify the VREF voltage. The value will be around 1100mV.
 
 
 
@@ -17,7 +17,7 @@ Check the header file for more documentation.
 
 https://docs.espressif.com/projects/esp-idf/en/latest/api-reference/peripherals/adc.html#adc-calibration
 
-> The calibration of the ADC can be achieved by various means. 1) eFuse Vref. This value is measured and burned into eFuse BLOCK0 during factory calibration; 2) Two Point; 3) Default Vref specified by the user/app.
+> The calibration of the ADC can be achieved by various means. 1) eFuse Vref. This value is measured and burned into eFuse BLOCK0 during factory calibration; 2) Two Point; 3) Default Vref specified by the user/app;
 
 
 
@@ -33,7 +33,7 @@ If "Two Point" or "eFuse Vref" values are unavailable, then the "Default Vref" m
 
    
 
-**For the LOLIN D32 the "eFuse VREF Voltage Reference" method is used to represent the ADC reference voltage. It is not required to specify a value for the ADC calibration characteristics to read the voltage via ADC (in fact the manually specified value would be ignored as the eFuse value will be used).**
+**For the LOLIN D32 the "eFuse VREF Voltage Reference" method is used to represent the ADC reference voltage. It is not required to specify a value for the ADC calibration characteristics to read the voltage via ADC (in fact the manually specified value would be ignored as the eFuse value will always be used).**
 
 
 

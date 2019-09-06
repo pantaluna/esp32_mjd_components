@@ -52,7 +52,7 @@ esp_err_t mjd_tmp36_log_config() {
  *
  * TMP36 Offset: 500 milliVolts
  * TMP36 Scale:   10 milliVolts / °C
- * => Formula: Temperature in in °C = [(Vout in mV) - 500mV] / 10mV
+ * => Formula: Temperature in °C = [(Vout in mV) - 500mV] / 10mV
  *
  *********************************************************************************/
 esp_err_t mjd_tmp36_convert_volts_to_degrees_celsius(mjd_tmp36_data_t* param_ptr_data) {

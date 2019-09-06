@@ -1,22 +1,24 @@
 # ESP-IDF MJD u-blox NEO-M8N GPS component
 This is component based on ESP-IDF for the ESP32 hardware from Espressif.
 
-Your app can initialize & de-initialize the GPS device, and read the actual GPS data (coordinates, fix_quality, number of satellites tracked) from the GPS device using this ESP-IDF component.
+Your app can initialize & de-initialize the GPS device, and read the actual GPS data (coordinates, fix_quality,  number of satellites tracked) from the GPS device using this ESP-IDF component.
 
 The component also exposes optional functions to control the power mode, to enable/disable the GNSS Receiver, to set the Measurement Rate, etc. These functions are typically used in a battery-powered solution.
 
 The component includes its own RTOS Task to read the NMEA messages coming from the GPS Device via the UART interface. The component stores the latest GPS in its own data structure.
 
-The app can read the actual / latest available data with a simple function call (see the example project) even when the device is powered-down at that moment.
+The app can read the actual / latest available data with a simple function call even when the device is powered-down at that moment (see the example project).
 
 The data structure consists of:
-- Fix quality (0: no Fix | 1: 3D Fix)
 - Latitude
 - Longitude
+- Fix quality (0: no Fix | 1: 3D Fix)
 - Number of satellites being tracked
 
+
+
 ## Example ESP-IDF project
-my_neom8n_gps_using_lib
+`esp32_neom8n_gps_using_lib`
 
 
 
@@ -26,7 +28,7 @@ u-blox NEO-M8N GPS Module with Shell.
 
 
 ## CHIP Info for this specific GPS Board
-- The system software runs from ROM (opposed to from Flash). The module contains no Flash so firmware upgrades are not possible; this is fine because the ROM contains the recent version V3.x.
+- The system software runs from ROM. The module contains no Flash so firmware upgrades are not possible; this is fine because the ROM contains the recent version V3.x.
 - The board supports UBX Protocol Version 18.00 (a recent version). A dump of the message UBX->MON->VER :
 
 ```
@@ -36,6 +38,8 @@ u-blox NEO-M8N GPS Module with Shell.
         PROTVER=18.00
         FWVER=SGP 3.01
 ```
+
+
 
 ## Data Sheet
 
@@ -48,31 +52,30 @@ https://www.u-blox.com/en/product/neo-m8-series
 ## Wiring Instructions
 
 ### MCU Adafruit HUZZAH32
-- Pin #23 = UART1 RX
-- Pin #22 = UART1 TX
+
 
 ### GPS Board
-You typically want to use the GPS Device with your ESP32 on a breadboard (female connectors) for development, but also with an FTDI Board (typically male connectors) so you can access and test the GPS board using the u-center software from u-blox on your PC.
+You typically want to use the GPS Device with your ESP32 on a breadboard (female connectors) for development. But also with an USB-UART FTDI Board (often male connectors) so you can access and test the GPS board using the u-center software from u-blox on your PC.
 
 This means that the wires from the GPS device must somehow have twin connectors. 
 
-The best approach is to cut off the big white PixHawk DF13 connector from the cable. For each of the 4 wires that came off of the DF13 connector Do get a male-to-female Dupont wire and cut it in half, and solder both ends to the wire. Goto the _doc folder for pictures of the GPS device and cables.
+The best approach is to cut off the big white PixHawk DF13 connector from the cable. For each of the 4 wires that came off of the DF13 connector do get a male-to-female Dupont wire and cut it in half, and solder both ends to the wire. Goto the _doc folder a picture of the result.
 
-The function of each colored wire varies, even for models that seem the same on the outside. So open the black circular GPS cover (unscrew the back) and find inside the markings on the back of the PCB that explain what the function is for each wire (VCC, GND, RX, TX). You only have to document the 4 wires that were on the big white DF13 connector (not the smaller connector).
+The function of each colored wire varies, even for models that seem the same on the outside. Unscrew the back of the black circular GPS cover. Find inside the markings on the back of the PCB that explain what the function is for each wire (VCC, GND, RX, TX). You only have to document the 4 wires that were on the big white DF13 connector (not the smaller connector).
 
 ```
-- External 6-pin DF13 connector.
-This is the GPS UART interface.
+- External DF13 6-pin connector.
+This is the GPS UART interface and the GPS power lines.
     
-MY DUPONT CABLE    GPS Cable    Function      ESP32 Pin / FTDI Pin
------------------  ----------   ----------    --------------------
-Green              RED          VCC           VCC
-Grey               BLACK        GND           GND
-Purple             YELLOW       UART TX       UART RX
-Blue               ORANGE       UART RX       UART TX
+GPS Cable  MY DUPONT CABLE  Function  ESP32 Pin / FTDI Pin
+---------  ---------------  --------  --------------------
+RED        Green            VCC       VCC
+BLACK      Grey             GND       GND
+YELLOW     Purple           UART TX   UART RX
+ORANGE     Blue             UART RX   UART TX
 
-- External 4-pin DF13 connector.
-This is the COMPASS I2C interface ***NOTUSED***.
+- External DF13 4-pin connector ***NOTUSED***.
+This is the COMPASS I2C interface.
 
 GPS Cable   Function  ESP32 Pin / FTDI Pin
 ---------   --------  --------------------
@@ -81,14 +84,16 @@ BLACKISH    I2C SDA   not used
 ```
 
 
-## Tool u-center V8.29 from the company u-blox
-The first thing you want to do with this GPS product is to use this tool for MS Windows from the company u-blox to test and configure the device and learn how the NMEA and UBX messages work.
 
-You need an FTDI USB-UART board to connect the GPS Board to the computer. Wire it up using the soldered Dupont wires that are described in the previous section. Pins: VCC, GND, UART TX, UART RX. Make sure to connect the TX wire of the GPS device to the RX connector of the FTDI board (and vice versa for the RX wire).
+## Tool u-center V8.29 from the company u-blox
+
+The first thing you want to do with this GPS product is to use the u-center tool for MS Windows from the company u-blox to test and configure the device and learn how the NMEA and UBX messages work.
+
+You need an FTDI USB-UART board to connect the GPS Board to the computer. Wire it up using the soldered Dupont wires that are described in the previous section. Pins: VCC, GND, UART TX, UART RX. Make sure to connect the TX wire of the GPS device to the RX connector of the USB-UART FTDI board (and vice versa for the RX wire).
 
 - @download https://www.u-blox.com/en/product/u-center-windows
-- Set baudrate = 9600 in the software.
-- Go to the ucenter Messages view to discover the hexadecimal code sequences for UBX commands (Slide up the lower half of the split window & copypaste to my programme!).
+- Set baud rate = 9600 in the software.
+- Go to the u-center Messages view to discover the hexadecimal code sequences for UBX commands (slide up the lower half of the split window & copy paste to my program).
 - All multi-byte values of the UBX commands are ordered in Little Endian format, unless otherwise indicated.
 - The checksum of the UBX commands is calculated over the Message, starting and including the CLASS field, up until, but excluding, the Checksum Field.
 
@@ -97,9 +102,9 @@ You need an FTDI USB-UART board to connect the GPS Board to the computer. Wire i
 ## GPS FAQ
 - OK 3.3V supply voltage.
 - Features a GPS Receiver + Compass.
-- The default baud rate for the UART1 is 9600 (this baud rate is also used by the u-blox u-center software).
-- GNSS stands for Global Navigation Satellite System, and is an umbrella term that encompasses all global satellite positioning systems. This includes constellations of satellites orbiting over the earth’s surface and continuously transmitting signals that enable users to determine their position. The Global Positioning System (GPS) is one component of the Global Navigation Satellite System.
-- The blue led on top of the GPS shell blinks if the GPs has a FIX (mostly "3D").
+- The default baud rate for the UART is 9600 (this baud rate is also used by the u-blox u-center software).
+- GNSS stands for Global Navigation Satellite System, and is an umbrella term that encompasses all global satellite positioning systems. This includes constellations of satellites orbiting over the earth’s surface and continuously transmitting signals that enable users to determine their position. The Global Positioning System (GPS) is one implementation of the Global Navigation Satellite System.
+- The blue led on top of the GPS shell blinks if the GPs has a Fix (mostly "3D").
 
 
 
@@ -222,16 +227,9 @@ Checksum (The two 1-byte CK_A and CK_B fields hold a 16-bit checksum whose calcu
 
 
 
-## FYI PixHawk flight controller instructions:
+## FYI PixHawk flight controller instructions
 
 Connect the GPS’s Hirose DF13 6-pin connector to the Pixhawk GPS port and the compass’s Hirose DF13 4-pin connector to the I2C port.
-
-
-
-
-## Issues
-
-None.
 
 
 

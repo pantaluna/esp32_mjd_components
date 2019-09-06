@@ -5,17 +5,17 @@ This component is designed to be used in combination with the **ESP-IDF** softwa
 
 The ESP-IDF component configures the I2C slave device and returns **the raw readings and the voltage-adjusted readings** of the analog input pin(s) on the ADS1115.
 
-More information:
-- Video Ralph S Bacon #104 ADS1115 Analog-to-Digital Converter for Arduino (2018) <https://www.youtube.com/watch?v=8qGr6Q5Ymps>
+The ADS1115 is typically used to process up to 4 analog input signals from various devices (e.g. battery voltage, analog sensor, gas sensor, piezo vibration sensor, temperature sensor, etc). It measures the voltage (compared to GND) of an analog pin, or the voltage difference between 2 analog pins.
 
-The ADS1115 is typically used to process up to 4 analog input signals from various devices (e.g. battery voltage, analog sensor, piezo vibration sensor, chemical sensor). It measures the voltage (compared to GND) of an analog pin, or the voltage difference between 2 analog pins.
+A tutorial:
+- Video Ralph S Bacon #104 ADS1115 Analog-to-Digital Converter for Arduino (2018) <https://www.youtube.com/watch?v=8qGr6Q5Ymps>
 
 
 
 ## Example ESP-IDF project(s)
 ```esp32_ads1115_adc_using_lib``` This project demonstrates the component mjd_ads1115. It uses a 50% voltage divider setup so you can measure GND (+-0V), VCC (3.3V) and the divided voltage (+-1.65V).
 
-```esp32_tmp36_sensor_ads1115_adc_using_lib``` This project demonstrates the components mjd_tmp36 and mjd_ads1115. The component mjd_tmp36 instructs the component mjd_ads1115 to read the voltage from the Analog TMP36 analog temperature sensor with the proper ADC settings and convert the voltage to degrees Celsius.
+```esp32_tmp36_sensor_ads1115_adc_using_lib``` This project demonstrates the components mjd_tmp36 and mjd_ads1115. The component mjd_tmp36 instructs the component mjd_ads1115 to read the voltage from the Analog TMP36 analog temperature sensor with the proper ADC settings, and converts the voltage to degrees Celsius.
 
 
 
@@ -23,9 +23,9 @@ The ADS1115 is typically used to process up to 4 analog input signals from vario
 
 [ Goto the _doc folder for photo's.]
 
-- Adafruit ADS1115 16-Bit ADC - 4 Channel with Programmable Gain Amplifier breakout board.
+- Adafruit ADS1115 16-Bit ADC - 4 Channel with Programmable Gain Amplifier breakout board (blue board).
 
-- GY-ADS1115 CJ-ADS1115 I2C ADS1115 16 Bit ADC 4 channel Module with Programmable Gain Amplifier breakout board.
+- CJ-ADS1115 I2C ADS1115 16 Bit ADC 4 channel Module with Programmable Gain Amplifier breakout board (smaller purple board).
 
 
 
@@ -45,23 +45,26 @@ PIN#  PIN NAME	  Description
 ----  ----------  -----------
  1    V VCC       Power supply (3.3V for the ESP32)
  2    G GND       Ground
- 3    SCL         I2C Serial Clock
- 4    SDA         I2C Serial Data
- 5    ADDR        I2C slave address select
- 6    ALERT/READY Comparator output or conversion ready
+ 3    SCL         I2C Serial Clock (10K pullup on breakout board)
+ 4    SDA         I2C Serial Data (10K pullup on breakout board)
+ 5    ADDR        I2C slave address select (10K pulldown on breakout board)
+ 6    ALERT/READY Comparator output or conversion ready (10K pullup on breakout board)
  7    A0          Analog input 0
  8    A1          Analog input 1
  9    A2          Analog input 2
 10    A3          Analog input 3
 ```
 
-The breakout boards contain a ceramic 100nF power-supply bypass capacitor between VCC and GND. The lines VCC and GND each contain a ferrite bead.
+These breakout boards contain:
 
-**The breakout boards contain a 10K pullup resistor for the following pins: I2C SCL, I2C SDA, ALR.**
+* A **10K pullup resistor** for the pin(s): I2C SCL, I2C SDA, **ALERT/READY**.
+* A **10K pulldown resistor** for the pin(s): **ADDR**.
+* A **ceramic 100nF bypass capacitor** between VCC and GND.
+* **A ferrite bead** for the VCC and GND traces.
 
-The use of the ALERT/READY pin is optional.
+These breakout boards expose **4 analog input pins**. You will only wire up the ones you need in your project; leave the others one floating.
 
-The breakout boards expose 4 analog pins. You will only wire up the ones you need in your project; leave the others one floating.
+**The ALERT/READY pin** asserts low at the end of a conversion (active low), and this functionality must be activated manually.
 
 
 
@@ -73,13 +76,15 @@ The breakout boards expose 4 analog pins. You will only wire up the ones you nee
 - Connect device pin "SDA" to the MCU pin SDA. I use GPIO#17 on the HUZZAH32 dev board.
 - Connect device pin "ALERT/READY" to an MCU input pin. I use GPIO#16 on the HUZZAH32 dev board. The use of this pin is optional but using it results in faster response times when reading ADC values.
 
+
+
 ### Wiring up the ADS1115 analog input pins
 
 [TODO Check if a RC Low Pass Filter is relevant for this app. <https://www.analog.com/en/analog-dialogue/articles/practical-filter-design-precision-adcs.html> ]
 
 - Using **a 2 meter copper wire (22 AWG)** to hookup a slave device to an ADS115 analog pin did not affect the voltage readings.
 - For wires longer than 2 meter you might have to add a 750 Ohm resistor in series with the input pin to reduce the noise.
-- For extreme long length it is advised to convert the voltage output of the client device to a current output.
+- For extreme long length it is advised to convert the voltage output of the client device to a current output (4-20mA current loop).
 
 
 
@@ -154,12 +159,6 @@ The ADS1115 supports up to 4 input channels. The CD74HC4051 supports up to 8 inp
 - The component can be used to **read/write all documented properties in the device** registers. Check the source ```mjd_ads1115_defs.h``` for more information.
 - The features **Continuous Conversion Mode** and **Threshold Alerting** are not implemented in this component because that typically requires a tight integration with the main program; so not good candidates for a generic component.
 - The ADS1115 can output slightly negative values in case the analog input is close to 0 V (GND) due to device offset. This situation is handled in software.
-
-
-
-## Issues
-
-/
 
 
 
